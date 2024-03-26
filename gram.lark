@@ -1,0 +1,18 @@
+start: exps+
+
+exps: exp ";"
+
+exp: literal | operation
+
+literal: BOOLEEN | ENTIER | TEXTE | liste
+BOOLEEN: "vrai" | "faux"
+ENTIER: "-"? "1".."9" ("0".."9")*
+TEXTE: /\"[^\"]*\"/
+liste: [] | [ exp ("," exp)*]
+
+operation: "ok"
+
+NOESPACE: /[ \t\f\r\n]/+
+%ignore NOESPACE
+COMMENT: "#" /[^\n]/*
+%ignore COMMENT
