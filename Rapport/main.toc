@@ -1,0 +1,11 @@
+\babel@toc {french}{}
+\contentsline {section}{\numberline {1}Introduction}{3}{section.1}%
+\contentsline {section}{\numberline {2}Grammaire implémentée}{4}{section.2}%
+\contentsline {section}{\numberline {3}Notre approche}{4}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Les variables}{4}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Le test conditionnel}{4}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}Les boucles}{4}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Les erreurs connues et les solutions envisagées}{4}{section.4}%
+\contentsline {section}{\numberline {5}Difficultés rencontrées}{5}{section.5}%
+\contentsline {section}{\numberline {6}Répartition du travail}{5}{section.6}%
+\contentsline {section}{\numberline {7}Conclusion}{5}{section.7}%

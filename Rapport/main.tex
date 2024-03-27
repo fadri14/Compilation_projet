@@ -1,0 +1,63 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\usepackage{pdfpages} 
+\usepackage[french]{babel}
+\usepackage[]{amsmath, amsfonts, amssymb, enumerate}
+\usepackage[T1]{fontenc}
+\usepackage{minted}
+\usemintedstyle{xcode}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\title{PROJET DE COMPILATION :\\ Rapport}
+\author{\textbf{Auteurs}: \\ Adrien Fievet \\ Claire D'Haene}
+\date{2023-2024}
+
+\usepackage{geometry}
+\geometry{hmargin=1.5cm,vmargin=2cm}
+
+\begin{document}
+
+\maketitle
+
+%to skip lines
+\vspace{7\baselineskip}
+
+\begin{minipage}{0.4\textwidth}
+    \begin{flushleft}
+        \large
+        \textit{Titulaire}\\
+        Véronique \textsc{BRUYERE}\\
+        Alexandre \textsc{DECAN}
+    \end{flushleft}
+\end{minipage}
+~
+\begin{minipage}{0.5\textwidth}
+    \begin{flushright}
+        \large
+        \textit{Etudiants}\\
+        Adrien (220625)\\
+        Claire (220323)\\
+    \end{flushright}
+\end{minipage}
+
+\begin{figure}
+    \centering
+    \includegraphics[width = 0.3\textwidth]{images/umons.jpeg}
+    \hspace{5em}
+    \includegraphics[width = 0.3\textwidth]{images/facSciences.png}
+\end{figure}
+
+%hide the number of the actual page just for the cover page
+\thispagestyle{empty}
+
+\newpage
+\tableofcontents
+\newpage
+
+\include{intro}
+\include{approche}
+\include{conclusion}
+
+\end{document}
+
