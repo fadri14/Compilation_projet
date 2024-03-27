@@ -42,6 +42,15 @@ class CalcTransformer(Transformer):
     def number(self, args):
         return float(args[0])
 
+    def boolean_comparison(self, args):
+        left, right = args
+        
+        # Vérifier si les deux valeurs sont des booléens
+        if isinstance(left, bool) and isinstance(right, bool):
+            return left == right
+        else:
+            raise ValueError("Les deux valeurs de la comparaison ne sont pas des booléens")
+
 parser = Lark.open("gram.lark", start='start', parser='lalr', transformer=CalcTransformer())
 
 if __name__ == '__main__':
