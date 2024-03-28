@@ -1,59 +1,38 @@
-import sys
-from lark import Lark, Transformer
+from lark import Lark, Token
+from lark.visitors import Interpreter
 
 grammar = """
-    start: expr
-
-    ?expr: sum
-
-    ?sum: product
-        | sum "+" product   -> add
-        | sum "-" product   -> sub
-
-    ?product: atom
-        | product "*" atom   -> mul
-        | product "/" atom   -> div
-
-    ?atom: NUMBER           -> number
-         | "-" atom         -> neg
-         | "(" expr ")"
-
-    %import common.NUMBER
-    %import common.WS
-    %ignore WS
+start: expr
+expr: NUMBER "+" NUMBER  -> add
+    | NUMBER "-" NUMBER  -> subtract
+NUMBER: /\d+/
+%ignore /\s+/
 """
 
-class CalcTransformer(Transformer):
-    def add(self, args):
-        return args[0] + args[1]
+class MyInterpreter(Interpreter):
+    def start(self, tree):
+        print(tree.data)
+        print(tree.meta)
+        return self.visit(tree.children[0])
 
-    def sub(self, args):
-        return args[0] - args[1]
+    def expr(self, tree):
+        # La méthode expr interprète une expression et retourne le résultat
+        return self.visit_children(tree)
 
-    def mul(self, args):
-        return args[0] * args[1]
+    def add(self, tree1):
+        # La méthode add interprète une addition et retourne le résultat
+        print(tree)
+        res = 0
+        for token in tree1.scan_values(lambda x: isinstance(x, Token)): #ou Number
+            res += int(token.value)
+            print(token.line)
+            print(token.value)
+        return res
 
-    def div(self, args):
-        return args[0] / args[1]
+parser = Lark(grammar, start='start')
+#parser = Lark(grammar.lark, start='start', parser='lalr')
+interpreter = MyInterpreter()
 
-    def neg(self, args):
-        return -args[0]
-
-    def number(self, args):
-        return float(args[0])
-
-    def boolean_comparison(self, args):
-        left, right = args
-        
-        # Vérifier si les deux valeurs sont des booléens
-        if isinstance(left, bool) and isinstance(right, bool):
-            return left == right
-        else:
-            raise ValueError("Les deux valeurs de la comparaison ne sont pas des booléens")
-
-parser = Lark.open("gram.lark", start='start', parser='lalr', transformer=CalcTransformer())
-
-if __name__ == '__main__':
-    with open(sys.argv[1]) as f:
-        print(parser.parse(f.read()))
-
+tree = parser.parse("2 + 3")
+result = interpreter.visit(tree)
+print("Résultat de l'expression:", result)
