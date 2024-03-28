@@ -10,7 +10,7 @@
 #[12, "coucou", 1] ;
 #[[ 3, "salut", 0 ], "'", "nice", 666];
 #5 vaut 5;
-#5 == 5;
+5 == 5;
 #0 ne    vaut  pas 1; 
 #non vrai ; 
 #0 vaut 0 vaut 0;

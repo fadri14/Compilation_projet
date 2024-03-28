@@ -30,7 +30,6 @@ class MyInterpreter(Interpreter):
         return res
 
 parser = Lark(grammar, start='start')
-#parser = Lark(grammar.lark, start='start', parser='lalr')
 interpreter = MyInterpreter()
 
 tree = parser.parse("2 + 3")
