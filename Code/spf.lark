@@ -1,0 +1,80 @@
+start: instruction*
+
+instruction.-5: declaration
+    | assignation
+    | afficher
+    | ajout
+    | condition
+    | boucle
+    | exp ";"
+
+declaration: TYPE VARIABLE ("=" exp)? ";"
+TYPE: "booléen" | "entier" | "texte" | "liste"
+VARIABLE: ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" ) ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" | "0".."9")*
+
+assignation: VARIABLE "=" exp ";"
+
+afficher: "afficher" (exp ",")* exp ";"
+
+ajout: "ajouter" exp "dans" VARIABLE ";"
+
+condition: si | sisinon
+si: "si" exp "alors" "{" instruction* "}"
+sisinon.1: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
+
+boucle: tantque | pourchaque
+tantque: "tant" "que" exp "faire" "{" instruction* "}"
+pourchaque: "pour" "chaque" TYPE VARIABLE "dans" exp "faire" "{" instruction* "}"
+
+exp: literal | operation | parenthese
+parenthese.15: "(" exp ")" //je ne suis pas sûr
+
+literal: BOOLEEN | ENTIER | TEXTE | leslistes
+BOOLEEN: "vrai" | "faux"
+ENTIER: ("+")? (("1".."9" ("0".."9")*) | "0")
+TEXTE: /\"[^\"]*\"/
+leslistes: liste | sequence
+liste: "[" "]" | "[" (exp ",")* exp "]"
+sequence: "[" exp ":" exp "]"
+
+operation: egalite
+    | nonegalite
+    | pluspetit
+    | plusgrand
+    | pluspetitouegal
+    | plusgrandouegal
+    | et
+    | ou
+    | non
+    | negation
+    | addition
+    | soustraction
+    | multiplication
+    | division
+    | indice
+    | taille
+    | ajout
+
+egalite.5: (exp "vaut" exp) | (exp "==" exp)
+nonegalite.5: (exp "ne" "vaut" "pas" exp) | (exp "!=" exp)
+pluspetit.5: exp "<" exp
+plusgrand.5: exp ">" exp
+pluspetitouegal.5: exp "<=" exp
+plusgrandouegal.5: exp ">=" exp
+et.5: exp "et" exp
+ou.5: exp "ou" exp
+non.10: "non" exp
+
+negation.10: "-" exp
+addition.7: (exp "+")+ exp
+soustraction.7: (exp "-")+ exp
+multiplication.7: (exp "*")+ exp
+division.7: (exp "/")+ exp
+
+indice.10: (leslistes | TEXTE) "[" exp "]"
+taille.10: "taille" (leslistes | TEXTE)
+
+NOESPACE: /[ \t\f\r\n]/+
+%ignore NOESPACE
+COMMENT: "#" /[^\n]/*
+%ignore COMMENT
