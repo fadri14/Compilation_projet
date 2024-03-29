@@ -6,7 +6,7 @@ instruction.-5: declaration
     | ajout
     | condition
     | boucle
-    //| exp ";" // Je ne sais pas s'il faut le prendre en charge
+    | exp ";"
 
 declaration: TYPE VARIABLE ("=" exp)? ";"
 TYPE: "booléen" | "entier" | "texte" | "liste"
@@ -30,12 +30,12 @@ exp: literal | operation | parenthese
 parenthese.15: "(" exp ")" //je ne suis pas sûr
 
 literal: BOOLEEN | ENTIER | TEXTE | leslistes
-BOOLEEN: "vrai" | "faux"
-ENTIER: ("+")? (("1".."9" ("0".."9")*) | "0")
-TEXTE: /\"[^\"]*\"/
+BOOLEEN.20: "vrai" | "faux"
+ENTIER.20: ("+")? (("1".."9" ("0".."9")*) | "0")
+TEXTE.20: /\"[^\"]*\"/
 leslistes: liste | sequence
-liste: "[" "]" | "[" (exp ",")* exp "]"
-sequence: "[" exp ":" exp "]"
+liste.20: "[" "]" | "[" (exp ",")* exp "]"
+sequence.20: "[" exp ":" exp "]"
 
 operation: egalite
     | nonegalite
@@ -65,17 +65,11 @@ et.5: exp "et" exp
 ou.5: exp "ou" exp
 non.10: "non" exp
 
-negation.10: "pass"
-addition.7: "pass"
-soustraction.7: "pass"
-multiplication.7: "pass"
-division.7: "pass"
-
-//negation.10: "-" exp
-//addition.7: (exp "+")+ exp
-//soustraction.7: (exp "-")+ exp
-//multiplication.7: (exp "*")+ exp
-//division.7: (exp "/")+ exp
+negation.10: "-" exp
+addition.7: exp ("+" exp)+
+soustraction.7: exp ("+" exp)+
+multiplication.7: exp ("+" exp)+
+division.7: exp ("+" exp)+
 
 indice.10: (leslistes | TEXTE) "[" exp "]"
 taille.10: "taille" (leslistes | TEXTE)
