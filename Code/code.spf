@@ -1,1 +1,58 @@
+# test de "literal"
+#okok
+# coll;#t \n
+vrai;
+faux;
+0; # toustnset
+123456000;
++120309;
+"nrstaun œ’æùienaruts'e.auz";
+[10];
+[[], "coucou", +0, 123];
+[10 : 54];
+
+# test de "declaration"
+entier _0bé;
+booléen Ŷ = vrai;
+texte ______1 = "blabla";
+liste maliste;
+
+# test de "assignation"
+Pokemon = "C'est génial!";
+
+# test de "afficher"
+afficher vrai, unevariable, "okok";
+
+# test de "ajout"
+ajouter "tropdesel" dans oops;
+
+# test de "condition"
+si archestgénial alors
+{
+    blabla = "I use";
+    _ = blabla + " Arch";
+    afficher _, " BTW";
+}
+si neovimestgénial # je dis juste la vérité
+alors { afficher vrai;}
+sinon {
+    VÉRITÉ = "t'as rien capté";
+    afficher VÉRITÉ, " frère";
+    }
+
+# test de "boucle"
+tant que linux vaut existe faire
+{afficher "être ", "heureux";}
+liste LESTRUCS_IMPORTANTS = ["arch", "neovim", "linux"];
+ajouter "sway" dans LESTRUCS_IMPORTANTS;
+entier nombre_de_trucs_importants = 0;
+pour chaque texte important dans LESTRUCS_IMPORTANTS
+faire {
+    afficher "Cette chose est très importante " , important;
+    nombre_de_trucs_importants = nombre_de_trucs_importants + 1;
+}
+afficher nombre_de_trucs_importants;
+pour chaque texte lettreDeLaBible dans "I use Arch btw !"
+faire
+{ afficher lettreDeLaBible; }
 

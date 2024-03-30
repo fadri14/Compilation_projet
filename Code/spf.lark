@@ -9,7 +9,7 @@ instruction: declaration
     | exp ";"
 
 declaration.-5: TYPE VARIABLE ("=" exp)? ";"
-TYPE: "booléen" | "entier" | "texte" | "liste"
+TYPE.20: "booléen" | "entier" | "texte" | "liste"
 VARIABLE: ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" ) ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" | "0".."9")*
 
 assignation.-5: VARIABLE "=" exp ";"
@@ -26,7 +26,7 @@ boucle: tantque | pourchaque
 tantque.-5: "tant" "que" exp "faire" "{" instruction* "}"
 pourchaque.-5: "pour" "chaque" TYPE VARIABLE "dans" exp "faire" "{" instruction* "}"
 
-exp: literal | operation | parenthese
+exp: literal | operation | parenthese | VARIABLE
 parenthese.15: "(" exp ")" //je ne suis pas sûr
 
 literal: BOOLEEN | ENTIER | TEXTE | leslistes
