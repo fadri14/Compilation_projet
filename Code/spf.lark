@@ -1,6 +1,6 @@
 start: instruction*
 
-instruction.-5: declaration
+instruction: declaration
     | assignation
     | afficher
     | ajout
@@ -8,23 +8,23 @@ instruction.-5: declaration
     | boucle
     | exp ";"
 
-declaration: TYPE VARIABLE ("=" exp)? ";"
+declaration.-5: TYPE VARIABLE ("=" exp)? ";"
 TYPE: "booléen" | "entier" | "texte" | "liste"
 VARIABLE: ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" ) ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" | "0".."9")*
 
-assignation: VARIABLE "=" exp ";"
+assignation.-5: VARIABLE "=" exp ";"
 
-afficher: "afficher" (exp ",")* exp ";"
+afficher.-5: "afficher" (exp ",")* exp ";"
 
-ajout: "ajouter" exp "dans" VARIABLE ";"
+ajout.-5: "ajouter" exp "dans" VARIABLE ";"
 
 condition: si | sisinon
-si: "si" exp "alors" "{" instruction* "}"
-sisinon.1: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
+si.-5: "si" exp "alors" "{" instruction* "}"
+sisinon.-4: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
 
 boucle: tantque | pourchaque
-tantque: "tant" "que" exp "faire" "{" instruction* "}"
-pourchaque: "pour" "chaque" TYPE VARIABLE "dans" exp "faire" "{" instruction* "}"
+tantque.-5: "tant" "que" exp "faire" "{" instruction* "}"
+pourchaque.-5: "pour" "chaque" TYPE VARIABLE "dans" exp "faire" "{" instruction* "}"
 
 exp: literal | operation | parenthese
 parenthese.15: "(" exp ")" //je ne suis pas sûr
@@ -53,7 +53,6 @@ operation: egalite
     | division
     | indice
     | taille
-    | ajout
 
 egalite.5: (exp "vaut" exp) | (exp "==" exp)
 nonegalite.5: (exp "ne" "vaut" "pas" exp) | (exp "!=" exp)
@@ -67,9 +66,9 @@ non.10: "non" exp
 
 negation.10: "-" exp
 addition.7: exp ("+" exp)+
-soustraction.7: exp ("+" exp)+
-multiplication.7: exp ("+" exp)+
-division.7: exp ("+" exp)+
+soustraction.7: exp ("-" exp)+
+multiplication.7: exp ("*" exp)+
+division.7: exp ("/" exp)+
 
 indice.10: (leslistes | TEXTE) "[" exp "]"
 taille.10: "taille" (leslistes | TEXTE)
