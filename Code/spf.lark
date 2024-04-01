@@ -70,8 +70,8 @@ soustraction.7: exp ("-" exp)+
 multiplication.7: exp ("*" exp)+
 division.7: exp ("/" exp)+
 
-indice.10: (leslistes | TEXTE) "[" exp "]"
-taille.10: "taille" (leslistes | TEXTE)
+indice.10: (leslistes | TEXTE | VARIABLE) "[" exp "]"
+taille.10: "taille" (leslistes | TEXTE | VARIABLE)
 
 NOESPACE: /[ \t\f\r\n]/+
 %ignore NOESPACE
