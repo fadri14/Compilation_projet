@@ -18,10 +18,6 @@ def flattenList(l):
 
 class MyInterpreter(Interpreter):
     def start(self, tree):
-        print(tree)
-        print()
-        print()
-        print()
         return self.visit_children(tree)
 
     def instruction(self, tree):
@@ -38,7 +34,7 @@ class MyInterpreter(Interpreter):
                     var.typeof = token.value
                 case "VARIABLE":
                     var.name = token.value
-                case "RES":
+                case default:
                     var.value = token.value
 
         memo.declare(var)
@@ -72,27 +68,14 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def exp(self, tree):
-        """
-        print("3-------")
-        print(tree)
-        for token in tree.scan_values(lambda x: isinstance(x, Token)):
-            print(token.line)
-            print(token.value)
-        """
         return self.visit_children(tree)
 
     def parenthese(self, tree):
         return self.visit_children(tree)
 
     def literal(self, tree):
-        for token in tree.scan_values(lambda x: isinstance(x, Token)):
-            match token.type:
-                case "sequence":
-                    pass # utiliser range
-                case default:
-                    return Token("RES", token.value)
-
-        #return self.visit_children(tree)
+        # revoir pour les liste
+        return tree.children[0]
 
     def liste(self, tree):
         return self.visit_children(tree)
@@ -102,37 +85,58 @@ class MyInterpreter(Interpreter):
 
     def egalite(self, tree):
         res = self.visit_children(tree)
-        return res[0][0] and res[1][0]
+        res = flattenList(res)
+        return Token("BOOLEEN", value.egalite(res))
 
     def nonegalite(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.nonegalite(res))
 
     def pluspetit(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.pluspetit(res))
 
     def plusgrand(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.plusgrand(res))
 
     def pluspetitouegal(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.pluspetitouegal(res))
 
     def plusgrandouegal(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.plusgrandouegal(res))
 
     def et(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.et(res))
 
     def ou(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.ou(res))
 
     def non(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("BOOLEEN", value.non(res[0]))
 
     def negation(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", value.negation(res[0]))
 
     def addition(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", value.addition(res))
 
     def soustraction(self, tree):
         return self.visit_children(tree)
@@ -160,6 +164,7 @@ if __name__ == '__main__':
     args = parser_argument.parse_args()
 
     memo = back.Memory(args.debug)
+    value = back.Value()
 
     with open(args.file) as f:
         tree = parser.parse(f.read())
