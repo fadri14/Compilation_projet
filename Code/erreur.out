@@ -1,0 +1,5 @@
+Traceback (most recent call last):
+  File "/home/adrien/Documents/bac3/Q2/Compilation/projet/Compilation_projet/Code/spf.py", line 51, in <module>
+    raise error.SPFSyntaxError()
+          ^^^^^^^^^^^^^^^^^^^^^^
+TypeError: SPFSyntaxError.__init__() missing 1 required positional argument: 'error'
