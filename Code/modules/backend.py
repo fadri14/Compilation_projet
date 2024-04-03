@@ -1,4 +1,5 @@
 from enum import Enum
+from copy import deepcopy
 
 class Type(Enum):
     ENTIER = 1
@@ -12,11 +13,24 @@ class Memory(): # Stocke les variables
     def __init__(self, flag_debug):
         self.flag_debug = flag_debug
         self.dico = {}
+        self.tmp = {}
+        self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
-    def declare(self, var):
-        # pour vérifier s'il n'existe pas déjà : dico.has_key(var.name)
+    # on force quand on crée la variable d'une boucle
+    def declare(self, var, force = False):
+        if not force and not var.name in self.dico.keys():
+            pass #erreur SPFAlreadyDefined
+
+        if var.name in self.keyword:
+            pass #erreur
+
         if self.flag_debug:
             print("déclaration:".ljust(15), var)
+
+        if force and var.name in self.dico.keys():
+            t = self.dico.get(var.name)
+            self.tmp[t.name] = t
+            del self.dico[var.name]
 
         global max
         if len(var.name) > max:
@@ -25,7 +39,10 @@ class Memory(): # Stocke les variables
         self.dico[var.name] = var
 
     def get(self, name):
-        var = self.dico.get(name)
+        if not name in self.dico.keys():
+            pass #erreur SPFUnknownVariable
+
+        var = deepcopy(self.dico.get(name))
 
         if var.value == None:
             pass #erreur
@@ -44,10 +61,20 @@ class Memory(): # Stocke les variables
         return var
 
     def set(self, name, value):
+        if not name in self.dico.keys():
+            pass #erreur SPFUnknownVariable
+
         self.dico.get(name).value = value
 
         if self.flag_debug:
-            print("modification:".ljust(15), name)
+            print("modification:".ljust(15), self.dico.get(name))
+
+    def delete(self, name):
+        del self.dico[name]
+        if name in self.tmp.keys(): # en théorie dans notre cas toujours vrai
+            d = self.tmp.get(name)
+            self.dico[d.name] = d
+            del self.tmp[name]
 
     # ne sert à rien…
     def typeof(self, var):
@@ -124,7 +151,7 @@ class Value(): # Effectue les calcules
     def calcul(self, tokens, operation):
         for t in tokens:
             if t.type != "ENTIER":
-                    pass #erreur
+                pass #erreur
 
         return operation(tokens[0].value, tokens[1].value)
 

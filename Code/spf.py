@@ -11,13 +11,22 @@ from copy import deepcopy
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
 #   quand c'est uniquement un booléen, c'est correct. le problème est dans une liste
 # faire la gestion d'erreur
-# corriger les problèmes de calculs
-# gérer l'addition pour les textes et les listes
-# gérer le variable doubles dans les boucles
+# corriger les problèmes à trois composants
+# gérer les différents types d'un indice voir todo
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
 # est-ce que ajout est une expression ?
+# des erreurs sont déjà localisées: SPFUnknownVariable SPFUninitializedVariable SPFAlreadyDefined SPFIndexError
+
+#erreur de l'assistant:
+#  Recherche d’un maximum: (les indices commencent à 1)
+#    maximum = nombres[0];
+#  Monotonicité d’une liste: (c'est pas liste mais nombres)
+#    pour chaque entier position dans [1:taille liste - 1] faire {
+#      si liste[position] > liste[position + 1] alors {
+#  Identifier les mots d’un texte: (oublie de "faire")
+#    pour chaque texte caractère dans phrase {
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -77,10 +86,15 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
+        print(tokens)
         if tokens[1].type == "TEXTE":
-            return Token("TEXTE", tokens[1].value[:-1] + tokens[0].value[1:])
+            res = tokens[1].value + tokens[0].value
+            memo.set(tree.children[1].value, res)
+            return Token("TEXTE", res)
+
         res = tokens[1].value
         res.append(tokens[0].value)
+        memo.set(tree.children[1].value, res)
         return Token("leslistes", res)
 
     def si(self, tree):
@@ -118,13 +132,13 @@ class MyInterpreter(Interpreter):
             else:
                 break
 
-    def pourchaque(self, tree): #todo
+    def pourchaque(self, tree):
         tree_copy = deepcopy(tree)
 
         var = back.Variable()
         var.typeof = tree.children[0].value
         var.name = tree.children[1].value
-        memo.declare(var)
+        memo.declare(var, True)
 
         iter = self.visit(tree.children[2])
         iter = flattenList(iter)[0].value
@@ -134,6 +148,7 @@ class MyInterpreter(Interpreter):
             for i in tree.children[3:]:
                 self.visit(i)
             tree = deepcopy(tree_copy)
+        memo.delete(var.name)
 
     def exp(self, tree):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
@@ -205,7 +220,18 @@ class MyInterpreter(Interpreter):
         return self.deco(tree, "ENTIER", lambda tokens: value.negation(tokens))
 
     def addition(self, tree):
-        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 + n2))
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+        
+        if tokens[0].type != tokens[1].type:
+            pass #erreur
+
+        if tokens[0].type == "liste":
+            res = tokens[0].value
+            res.extend(tokens[1].value)
+            return Token("liste", res)
+        else:
+            return Token(tokens[0].type, value.calcul(tokens, lambda n1, n2: n1 + n2))
 
     def soustraction(self, tree):
         return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
@@ -223,7 +249,7 @@ class MyInterpreter(Interpreter):
         if tokens[1].type == "ENTIER":
             if tokens[0].type == "TEXTE" or tokens[0].type == "liste":
                 if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
-                    pass #erreur
+                    pass #erreur SPFIndexError
                 else:
                     #todo ca peut être tous les types, que faire ?
                     return Token("TEXTE", tokens[0].value[tokens[1].value-1])

@@ -1,4 +1,31 @@
-pour chaque entier n dans [1, 2, [3, 4]] faire { afficher n; }
+texte phrase = "Bonjour à tout le monde";
+texte mot = "";
+liste mots = [];
+pour chaque texte caractère dans phrase faire
+{
+    si caractère vaut " " alors
+    {
+        si taille mot > 0 alors
+        {
+            afficher "mot: ", mot;
+            ajouter mot dans mots;
+            afficher "les mots: ", mots;
+            mot = "";
+        }
+    }
+    sinon
+    {
+        mot = mot + caractère;
+    }
+}
+
+# Potentiel dernier mot
+si taille mot > 0 alors
+{
+    ajouter mot dans mots;
+}
+afficher mots;
+#----------------------------------------------------------------------
 
 # OK
 #texte coucou = "coucou";
@@ -27,8 +54,11 @@ pour chaque entier n dans [1, 2, [3, 4]] faire { afficher n; }
 #entier i = 0; tant que i < 10 faire { afficher i; i = i + 1; }
 #texte mot = "bonjour"; entier i = 1; tant que i <= taille mot faire { afficher mot[i]; i = i+1; }
 #pour chaque texte lettre dans "neovim" faire { texte prefix = "je demande un '"; texte postfix = "'"; afficher prefix, lettre, postfix; } afficher "NEOVIM!";
-
-
+#pour chaque entier n dans [1, 2, [3, 4]] faire { afficher n; }
+#pour chaque entier i dans [1:10] faire { pour chaque entier j dans [1:10] faire { afficher i, j;}}
+#afficher "bon" + "jour";
+#afficher [1] + [2, 3] + ["yes"];
+#entier x = 10; pour chaque entier x dans [1:5] faire { afficher x; } afficher x;
 
 # Problème
 #entier n = 1 + 10 - 8;
