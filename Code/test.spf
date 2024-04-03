@@ -1,5 +1,7 @@
 
 
+
+
 # OK
 #texte coucou = "coucou";
 #entier n = -1;
@@ -16,6 +18,10 @@
 #afficher ajouter " btw" dans "I use Arch";
 #afficher ajouter 1 dans [3, 2];
 #liste l2 = [2: 5]; l2 = [1];
+#booléen b1 = vrai; booléen b2 = faux ;booléen b3 = b1 et b2;
+#entier n1 = 10; afficher n1 / 2;
+#texte c = "salut" ; afficher c;
+#liste l3 = [1, 2]; ajouter [4] dans l3; ajouter "texte" dans l3; afficher l3;
 
 # Problème
 #entier n = 1 + 10 - 8;

@@ -8,9 +8,10 @@ import modules.backend as back
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
+#   quand c'est uniquement un booléen, c'est correct. le problème est dans une liste
 # faire la gestion d'erreur
 # corriger les problèmes de calculs
-# utiliser les variables dans les expressions
+# gérer l'addition pour les textes et les listes
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
@@ -93,6 +94,10 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def exp(self, tree):
+        for token in tree.scan_values(lambda x: isinstance(x, Token)):
+            if token.type == "VARIABLE":
+                var = memo.get(token.value)
+                token.type, token.value = var.typeof, var.value
         return self.visit_children(tree)
 
     def parenthese(self, tree): #todo

@@ -24,11 +24,16 @@ class Memory(): # Stocke les variables
 
         self.dico[var.name] = var
 
-    def get(self, var):
+    def get(self, name):
+        var = self.dico.get(name)
+
+        if var.value == None:
+            pass #erreur
+
         if self.flag_debug:
             print("accès:".ljust(15), var)
 
-        return self.dico.get(var)
+        return var
 
     def set(self, name, value):
         self.dico.get(name).value = value
@@ -93,10 +98,10 @@ class Value(): # Effectue les calcules
         return self.deco(tokens, "ENTIER", lambda args : args[0].value >= args[1].value)
 
     def et(self, tokens):
-        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value and args[1].value)
+        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" and args[1].value == "vrai")
 
     def ou(self, tokens):
-        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value or args[1].value)
+        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" or args[1].value == "vrai")
 
     def non(self, tokens):
         return self.deco(tokens, "BOOLEEN", lambda args : args[0].value != "vrai")

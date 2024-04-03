@@ -3,7 +3,7 @@ start: instruction*
 instruction: declaration
     | assignation
     | afficher
-    | ajout
+    | ajout ";"
     | condition
     | boucle
     | exp ";"
@@ -17,7 +17,7 @@ assignation.-5: VARIABLE "=" exp ";"
 
 afficher.-5: "afficher" ((exp | ajout) ",")* (exp | ajout) ";"
 
-ajout.-5: "ajouter" exp "dans" exp | VARIABLE ";"
+ajout.-5: "ajouter" exp "dans" exp | VARIABLE
 
 condition: si | sisinon
 si.-5: "si" exp "alors" "{" instruction* "}"
