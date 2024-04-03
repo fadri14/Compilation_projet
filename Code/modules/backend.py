@@ -33,6 +33,14 @@ class Memory(): # Stocke les variables
         if self.flag_debug:
             print("accès:".ljust(15), var)
 
+        match var.typeof:
+            case "booléen":
+                var.typeof = "BOOLEEN"
+            case "entier":
+                var.typeof = "ENTIER"
+            case "texte":
+                var.typeof = "TEXTE"
+
         return var
 
     def set(self, name, value):

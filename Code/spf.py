@@ -5,6 +5,7 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.exception as error
 import modules.backend as back
+from copy import deepcopy
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
@@ -12,7 +13,6 @@ import modules.backend as back
 # faire la gestion d'erreur
 # corriger les problèmes de calculs
 # gérer l'addition pour les textes et les listes
-# gérer le fait qu'une variable est de type "BOOLEEN" mais a le type 'booléen'
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
@@ -86,15 +86,15 @@ class MyInterpreter(Interpreter):
         test = self.visit(tree.children[0])
         test = flattenList(test)[0]
         #todo régler le problème de type
-        if test.type != "booléen" and test.type != "BOOLEEN":
+        if test.type != "BOOLEEN":
             pass #erreur
 
         if test.value == "vrai":
-            for c in tree.children[1:]:
-                self.visit(c)
+            for i in tree.children[1:]:
+                self.visit(i)
         return test.value
 
-    def sisinon(self, tree): #todo
+    def sisinon(self, tree):
         test = self.visit(tree.children[0])
 
         if test == "faux":
@@ -102,7 +102,20 @@ class MyInterpreter(Interpreter):
                 self.visit(c)
 
     def tantque(self, tree): #todo
-        return self.visit_children(tree)
+        tree_copy = deepcopy(tree)
+        while True:
+            test = self.visit(tree.children[0])
+            test = flattenList(test)[0]
+            #todo régler le problème de type
+            if test.type != "BOOLEEN":
+                pass #erreur
+
+            if test.value == "vrai":
+                for i in tree.children[1:]:
+                    self.visit(i)
+                tree = deepcopy(tree_copy)
+            else:
+                break
 
     def pourchaque(self, tree): #todo
         return self.visit_children(tree)

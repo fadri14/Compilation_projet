@@ -23,6 +23,10 @@
 #booléen drapeau = vrai; si drapeau alors { afficher "gg"; afficher "wp"; }
 #si vrai ou faux alors { afficher "gg"; afficher "wp"; }
 #si faux alors { texte res = "non" ; afficher res;} sinon { texte res = "oui" ; afficher res;}
+#si vrai alors { si vrai alors { afficher "1"; } sinon { afficher "2"; } } sinon { afficher "3"; }
+#entier i = 0; tant que i < 10 faire { afficher i; i = i + 1; }
+#texte mot = "bonjour"; entier i = 1; tant que i <= taille mot faire { afficher mot[i]; i = i+1; }
+
 
 # Problème
 #entier n = 1 + 10 - 8;
