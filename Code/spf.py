@@ -5,7 +5,16 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.exception as error
 import modules.backend as back
-import math
+
+#todo:
+# comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
+# faire la gestion d'erreur
+# corriger les problèmes de calculs
+# utiliser les variables dans les expressions
+
+#note:
+# peut-on avoir des " dans une chaine de caractère
+# est-ce que ajout est une expression ?
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -17,9 +26,13 @@ def flattenList(l):
             resultat.append(element)
     return resultat
 
-# Apparement si on met juste return self.visit_children(tree) dans une fonction
-# on peut la retirer
+# Apparement si on met juste return self.visit_children(tree) dans une fonction on peut la retirer
 class MyInterpreter(Interpreter):
+    def deco(self, tree, type_res, func):
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+        return Token(type_res, func(tokens))
+
     def start(self, tree):
         return self.visit_children(tree)
 
@@ -28,29 +41,20 @@ class MyInterpreter(Interpreter):
 
     def declaration(self, tree):
         var = back.Variable()
-        res = self.visit_children(tree)
-        res = flattenList(res)
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
 
-        for token in res:
-            match token.type:
-                case "TYPE":
-                    var.typeof = token.value
-                case "VARIABLE":
-                    var.name = token.value
-                case default:
-                    var.value = token.value
+        var.typeof = tokens[0].value
+        var.name = tokens[1].value
+        if len(tokens) == 3:
+            var.value = tokens[2].value
 
         memo.declare(var)
 
     def assignation(self, tree):
-        for token in tree.scan_values(lambda x: isinstance(x, Token)):
-            match token.type:
-                case "VARIABLE":
-                    name = token.value
-
-        new_value = self.visit_children(tree)[1][0]
-
-        memo.set(name, new_value)
+        token = self.visit_children(tree)
+        token = flattenList(token)
+        memo.set(token[0].value, token[1].value)
 
     def afficher(self, tree):
         tokens = self.visit_children(tree)
@@ -58,7 +62,7 @@ class MyInterpreter(Interpreter):
         res = ""
         for i in range(len(tokens)):
             if tokens[i].type == "TEXTE":
-                res += str(tokens[i].value)[1:-1]
+                res += str(tokens[i].value)
             else:
                 res += str(tokens[i].value)
             if i != len(tokens) -1:
@@ -66,7 +70,7 @@ class MyInterpreter(Interpreter):
 
         print(res)
 
-    def ajout(self, tree): # est-ce que ajout est une expression ?
+    def ajout(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
@@ -98,6 +102,8 @@ class MyInterpreter(Interpreter):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
             if token.type == "ENTIER":
                 token.value = int(token.value)
+            if token.type == "TEXTE" and token.value[0] == '"' and token.value[-1] == '"':
+                token.value = token.value[1:-1]
 
         return self.visit_children(tree)
 
@@ -116,116 +122,71 @@ class MyInterpreter(Interpreter):
     def sequence(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-        vars = []
-        return Token("liste", [i for i in range(tokens[0].value, tokens[1].value + 1)])
+        return Token("liste", [_ for _ in range(tokens[0].value, tokens[1].value + 1)])
 
     def operation(self, tree):
         return self.visit_children(tree)
 
     def egalite(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.egalite(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
 
     def nonegalite(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.nonegalite(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.nonegalite(tokens))
 
     def pluspetit(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.pluspetit(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.pluspetit(tokens))
 
     def plusgrand(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.plusgrand(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.plusgrand(tokens))
 
     def pluspetitouegal(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.pluspetitouegal(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.pluspetitouegal(tokens))
 
     def plusgrandouegal(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.plusgrandouegal(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.plusgrandouegal(tokens))
 
     def et(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.et(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.et(tokens))
 
     def ou(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.ou(res))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.ou(tokens))
 
     def non(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("BOOLEEN", value.non(res[0]))
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.non(tokens))
 
     def negation(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", value.negation(res[0]))
+        return self.deco(tree, "ENTIER", lambda tokens: value.negation(tokens))
 
     def addition(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 + n2))
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 + n2))
 
     def soustraction(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 - n2))
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
 
     def multiplication(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 * n2))
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 * n2))
 
     def division(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 / n2))
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 / n2))
 
     def indice(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
 
-        flag = True
-        s = ""
-        l = []
-        index = 0
-
-        for token in res:
-            match token.type:
-                case "TEXTE":
-                    s= token.value[1:-1]
-                    flag = True
-                case "liste":
-                    l = token.value
-                    flag = False
-                case "ENTIER":
-                    index = token.value
-
-
-        if flag:
-            if index <= 0 or len(s) > abs(index):
+        if tokens[1].type == "ENTIER":
+            if tokens[0].type == "TEXTE" or tokens[0].type == "liste":
+                if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
+                    pass #erreur
+                else:
+                    #todo ca peut être tous les types, que faire ?
+                    return Token("TEXTE", tokens[0].value[tokens[1].value-1])
+            else:
                 pass #erreur
-            return Token("TEXTE", s[index-1])
-        
-        if index <= 0 or len(l) >= abs(index):
+        else:
             pass #erreur
-        return Token("liste", l[index-1])
 
     def taille(self, tree):
-        res = self.visit_children(tree)
-        res = flattenList(res)
-        return Token("ENTIER", len(res[0].value))
+        return self.deco(tree, "ENTIER", lambda tokens: len(tokens[0].value))
 
 parser = Lark.open("spf.lark", parser='lalr')
 interpreter = MyInterpreter()

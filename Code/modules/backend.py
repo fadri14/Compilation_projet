@@ -11,38 +11,38 @@ max = 0
 class Memory(): # Stocke les variables
     def __init__(self, flag_debug):
         self.flag_debug = flag_debug
-        self.stack = []
+        self.dico = {}
 
     def declare(self, var):
+        # pour vérifier s'il n'existe pas déjà : dico.has_key(var.name)
         if self.flag_debug:
             print("déclaration:".ljust(15), var)
 
         global max
         if len(var.name) > max:
             max = len(var.name)
-        self.stack.append(var)
+
+        self.dico[var.name] = var
 
     def get(self, var):
         if self.flag_debug:
             print("accès:".ljust(15), var)
 
-        return self.stack.get(var)
+        return self.dico.get(var)
 
     def set(self, name, value):
-        for var in self.stack:
-            if var.name == name:
-                var.value = value
-                break
+        self.dico.get(name).value = value
 
         if self.flag_debug:
-            print("modification:".ljust(15), var)
+            print("modification:".ljust(15), name)
 
+    # ne sert à rien…
     def typeof(self, var):
         return (memo.get(var)).typeof
 
     def __str__(self):
         res = ""
-        for var in self.stack:
+        for var in self.dico.values():
             res += var.__str__()
             res += "\n"
 
@@ -58,32 +58,20 @@ class Variable(): # Représente une variable
         return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {self.value}"
 
 class Value(): # Effectue les calcules
-    def __init__(self):
-        pass
+    def deco(self, tokens, type_tokens, func):
+        for t in tokens:
+            if t.type != type_tokens:
+                    pass #erreur
+
+        if func(tokens):
+            return "vrai"
+        return "faux"
 
     def egalite(self, tokens):
-        vars = []
-        flag = []
-
-        for t in tokens:
-            match t.type:
-                case "BOOLEEN":
-                    vars.append(t.value)
-                    flag.append("BOOLEEN")
-                case "ENTIER":
-                    vars.append(t.value)
-                    flag.append("ENTIER")
-                case "TEXTE":
-                    vars.append(t.value)
-                    flag.append("TEXTE")
-                case "liste":
-                    vars.append(t.value)
-                    flag.append("liste")
-
-        if flag[0] != flag[1]:
+        if tokens[0].type != tokens[1].type:
             pass #erreur
 
-        if vars[0] == vars[1]:
+        if tokens[0].value == tokens[1].value:
             return "vrai"
         return "faux"
 
@@ -93,64 +81,31 @@ class Value(): # Effectue les calcules
         return "vrai"
 
     def pluspetit(self, tokens):
-        for t in tokens:
-            if t.type != "ENTIER":
-                    pass #erreur
-
-        if int(tokens[0].value) < int(tokens[1].value):
-            return "vrai"
-        return "faux"
+        return self.deco(tokens, "ENTIER", lambda args : args[0].value < args[1].value)
 
     def plusgrand(self, tokens):
-        if self.pluspetit(tokens) == "vrai":
-            return "faux"
-        return "vrai"
+        return self.deco(tokens, "ENTIER", lambda args : args[0].value > args[1].value)
 
     def pluspetitouegal(self, tokens):
-        for t in tokens:
-            if t.type != "ENTIER":
-                    pass #erreur
-
-        if int(tokens[0].value) <= int(tokens[1].value):
-            return "vrai"
-        return "faux"
+        return self.deco(tokens, "ENTIER", lambda args : args[0].value <= args[1].value)
 
     def plusgrandouegal(self, tokens):
-        if self.pluspetitouegal(tokens) == "vrai":
-            return "faux"
-        return "vrai"
+        return self.deco(tokens, "ENTIER", lambda args : args[0].value >= args[1].value)
 
     def et(self, tokens):
-        for t in tokens:
-            if t.type != "BOOLEEN":
-                    pass #erreur
-
-        if tokens[0].value == "vrai" and tokens[1].value == "vrai":
-            return "vrai"
-        return "faux"
+        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value and args[1].value)
 
     def ou(self, tokens):
-        for t in tokens:
-            if t.type != "BOOLEEN":
-                    pass #erreur
+        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value or args[1].value)
 
-        if tokens[0].value == "vrai" or tokens[1].value == "vrai":
-            return "vrai"
-        return "faux"
-
-    def non(self, token):
-        if token.type != "BOOLEEN":
-                    pass #erreur
-
-        if token.value == "vrai":
-            return "faux"
-        return "vrai"
+    def non(self, tokens):
+        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value != "vrai")
 
     def negation(self, token):
-        if token.type != "ENTIER":
+        if token[0].type != "ENTIER":
                     pass #erreur
 
-        return - int(token)
+        return - token[0].value
 
     # operation est une fonction lambda effectuant une opération entre deux nombres
     def calcul(self, tokens, operation):
@@ -158,5 +113,5 @@ class Value(): # Effectue les calcules
             if t.type != "ENTIER":
                     pass #erreur
 
-        return operation(int(tokens[0].value), int(tokens[1].value))
+        return operation(tokens[0].value, tokens[1].value)
 
