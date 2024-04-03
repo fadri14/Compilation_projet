@@ -21,4 +21,5 @@
 
 # Problème
 #entier n = 1 + 10 - 8;
-#l2 = [1];
+#liste l2 = [2: 5];
+liste l2 = [2: 5]; l2 = [1];
