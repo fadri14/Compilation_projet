@@ -76,9 +76,9 @@ class Value(): # Effectue les calcules
                 case "TEXTE":
                     vars.append(t.value)
                     flag.append("TEXTE")
-                case "LISTE":
+                case "liste":
                     vars.append(t.value)
-                    flag.append("LISTE")
+                    flag.append("liste")
 
         if flag[0] != flag[1]:
             pass #erreur
@@ -152,19 +152,11 @@ class Value(): # Effectue les calcules
 
         return - int(token)
 
-    def addition(self, tokens):
+    # operation est une fonction lambda effectuant une opération entre deux nombres
+    def calcul(self, tokens, operation):
         for t in tokens:
             if t.type != "ENTIER":
                     pass #erreur
 
-        return int(tokens[0].value) + int(tokens[1].value)
-
-    def soustraction(self, tokens):
-        pass
-
-    def multiplication(self, tokens):
-        pass
-
-    def division(self, tokens):
-        pass
+        return operation(int(tokens[0].value), int(tokens[1].value))
 

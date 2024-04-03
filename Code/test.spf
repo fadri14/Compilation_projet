@@ -1,2 +1,24 @@
-entier n = 1 + 2;
 
+
+
+
+
+# OK
+#texte coucou = "coucou";
+#entier n = -1;
+#liste l = [1, "hey", vrai];
+#booléen test = vrai;
+#liste l1 = [];
+#liste l2 = [2: 5];
+#texte lettre = "salut"[1];
+#entier n2 = [1, 3, 4][3];
+#entier n3 = [1:10][6];
+#entier t = taille "arch";
+#entier t2 = taille [1:20];
+#afficher 1, "coucou", 2 * 4;
+#afficher ajouter " btw" dans "I use Arch";
+#afficher ajouter 1 dans [3, 2];
+
+# Problème
+#entier n = 1 + 10 - 8;
+#l2 = [1];

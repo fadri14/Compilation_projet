@@ -5,6 +5,7 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.exception as error
 import modules.backend as back
+import math
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -16,6 +17,8 @@ def flattenList(l):
             resultat.append(element)
     return resultat
 
+# Apparement si on met juste return self.visit_children(tree) dans une fonction
+# on peut la retirer
 class MyInterpreter(Interpreter):
     def start(self, tree):
         return self.visit_children(tree)
@@ -50,37 +53,73 @@ class MyInterpreter(Interpreter):
         memo.set(name, new_value)
 
     def afficher(self, tree):
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+        res = ""
+        for i in range(len(tokens)):
+            if tokens[i].type == "TEXTE":
+                res += str(tokens[i].value)[1:-1]
+            else:
+                res += str(tokens[i].value)
+            if i != len(tokens) -1:
+                res += " "
+
+        print(res)
+
+    def ajout(self, tree): # est-ce que ajout est une expression ?
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+
+        if tokens[1].type == "TEXTE":
+            return Token("TEXTE", tokens[1].value[:-1] + tokens[0].value[1:])
+        res = tokens[1].value
+        res.append(tokens[0].value)
+        return Token("leslistes", res)
+
+    def si(self, tree): #todo
         return self.visit_children(tree)
 
-    def ajout(self, tree):
+    def sisinon(self, tree): #todo
         return self.visit_children(tree)
 
-    def si(self, tree):
+    def tantque(self, tree): #todo
         return self.visit_children(tree)
 
-    def sisinon(self, tree):
-        return self.visit_children(tree)
-
-    def tantque(self, tree):
-        return self.visit_children(tree)
-
-    def pourchaque(self, tree):
+    def pourchaque(self, tree): #todo
         return self.visit_children(tree)
 
     def exp(self, tree):
         return self.visit_children(tree)
 
-    def parenthese(self, tree):
+    def parenthese(self, tree): #todo
         return self.visit_children(tree)
 
     def literal(self, tree):
-        # revoir pour les liste
-        return tree.children[0]
+        for token in tree.scan_values(lambda x: isinstance(x, Token)):
+            if token.type == "ENTIER":
+                token.value = int(token.value)
 
-    def liste(self, tree):
         return self.visit_children(tree)
 
+    def leslistes(self, tree):
+        return self.visit_children(tree)
+
+    def liste(self, tree):
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+        l = []
+        for t in tokens:
+            l.append(t.value)
+
+        return Token("liste", l)
+
     def sequence(self, tree):
+        tokens = self.visit_children(tree)
+        tokens = flattenList(tokens)
+        vars = []
+        return Token("liste", [i for i in range(tokens[0].value, tokens[1].value + 1)])
+
+    def operation(self, tree):
         return self.visit_children(tree)
 
     def egalite(self, tree):
@@ -136,22 +175,57 @@ class MyInterpreter(Interpreter):
     def addition(self, tree):
         res = self.visit_children(tree)
         res = flattenList(res)
-        return Token("ENTIER", value.addition(res))
+        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 + n2))
 
     def soustraction(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 - n2))
 
     def multiplication(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 * n2))
 
     def division(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", value.calcul(res, lambda n1, n2: n1 / n2))
 
     def indice(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+
+        flag = True
+        s = ""
+        l = []
+        index = 0
+
+        for token in res:
+            match token.type:
+                case "TEXTE":
+                    s= token.value[1:-1]
+                    flag = True
+                case "liste":
+                    l = token.value
+                    flag = False
+                case "ENTIER":
+                    index = token.value
+
+
+        if flag:
+            if index <= 0 or len(s) > abs(index):
+                pass #erreur
+            return Token("TEXTE", s[index-1])
+        
+        if index <= 0 or len(l) >= abs(index):
+            pass #erreur
+        return Token("liste", l[index-1])
 
     def taille(self, tree):
-        return self.visit_children(tree)
+        res = self.visit_children(tree)
+        res = flattenList(res)
+        return Token("ENTIER", len(res[0].value))
 
 parser = Lark.open("spf.lark", parser='lalr')
 interpreter = MyInterpreter()

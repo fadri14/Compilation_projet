@@ -15,9 +15,9 @@ VARIABLE: ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" 
 
 assignation.-5: VARIABLE "=" exp ";"
 
-afficher.-5: "afficher" (exp ",")* exp ";"
+afficher.-5: "afficher" ((exp | ajout) ",")* (exp | ajout) ";"
 
-ajout.-5: "ajouter" exp "dans" VARIABLE ";"
+ajout.-5: "ajouter" exp "dans" exp | VARIABLE ";"
 
 condition: si | sisinon
 si.-5: "si" exp "alors" "{" instruction* "}"
