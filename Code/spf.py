@@ -86,15 +86,14 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
-        print(tokens)
-        if tokens[1].type == "TEXTE":
-            res = tokens[1].value + tokens[0].value
-            memo.set(tree.children[1].value, res)
-            return Token("TEXTE", res)
+        var = memo.get(tokens[1].value)
 
-        res = tokens[1].value
+        if var.typeof != "liste":
+            pass #erreur
+
+        res = var.value
         res.append(tokens[0].value)
-        memo.set(tree.children[1].value, res)
+        memo.set(var.name, res)
         return Token("leslistes", res)
 
     def si(self, tree):

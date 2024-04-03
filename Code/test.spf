@@ -1,33 +1,4 @@
-texte phrase = "Bonjour à tout le monde";
-texte mot = "";
-liste mots = [];
-pour chaque texte caractère dans phrase faire
-{
-    si caractère vaut " " alors
-    {
-        si taille mot > 0 alors
-        {
-            afficher "mot: ", mot;
-            ajouter mot dans mots;
-            afficher "les mots: ", mots;
-            mot = "";
-        }
-    }
-    sinon
-    {
-        mot = mot + caractère;
-    }
-}
-
-# Potentiel dernier mot
-si taille mot > 0 alors
-{
-    ajouter mot dans mots;
-}
-afficher mots;
-#----------------------------------------------------------------------
-
-# OK
+### OK
 #texte coucou = "coucou";
 #entier n = -1;
 #liste l = [1, "hey", vrai];
@@ -60,6 +31,62 @@ afficher mots;
 #afficher [1] + [2, 3] + ["yes"];
 #entier x = 10; pour chaque entier x dans [1:5] faire { afficher x; } afficher x;
 
-# Problème
+### Problème
 #entier n = 1 + 10 - 8;
 #booléen bool = non faux et vrai;
+
+###  exemple projet
+## Recherche d’un maximum
+liste nombres = [1, 8, 3, 6];
+entier maximum;
+maximum = nombres[1];
+pour chaque entier nombre dans nombres faire {
+si nombre > maximum alors {
+maximum = nombre;
+}
+}
+afficher "Le maximum dans", nombres, "est", maximum;
+
+## Factorielle d’un nombre
+entier nombre = 5;
+entier factorielle;
+factorielle = 1;
+tant que nombre > 0 faire {
+factorielle = factorielle * nombre;
+nombre = nombre - 1;
+}
+afficher "La factorielle vaut", factorielle;
+
+## Monotonicité d’une liste
+liste nombres = [3, 3, 6, 7, 8];
+booléen monotone = vrai;
+pour chaque entier position dans [1:taille nombres - 1] faire {
+si nombres[position] > nombres[position + 1] alors {
+monotone = faux;
+}
+}
+si monotone alors {
+afficher "La liste", nombres, "est monotone";
+} sinon {
+afficher "La liste", nombres, "n'est pas monotone";
+}
+
+## Identifier les mots d’un texte
+texte phrase = "Bonjour à tout le monde";
+texte mot = "";
+liste mots = [];
+pour chaque texte caractère dans phrase faire {
+si caractère vaut " " alors {
+si taille mot > 0 alors {
+ajouter mot dans mots;
+mot = "";
+}
+} sinon {
+mot = mot + caractère;
+}
+}
+# Potentiel dernier mot
+si taille mot > 0 alors {
+ajouter mot dans mots;
+}
+afficher mots;

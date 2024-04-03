@@ -77,7 +77,7 @@ class Memory(): # Stocke les variables
             del self.tmp[name]
 
     # ne sert à rien…
-    def typeof(self, var):
+    def typeof(self, name):
         return (memo.get(var)).typeof
 
     def __str__(self):
