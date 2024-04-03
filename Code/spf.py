@@ -12,6 +12,7 @@ import modules.backend as back
 # faire la gestion d'erreur
 # corriger les problèmes de calculs
 # gérer l'addition pour les textes et les listes
+# gérer le fait qu'une variable est de type "BOOLEEN" mais a le type 'booléen'
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
@@ -81,12 +82,24 @@ class MyInterpreter(Interpreter):
         res.append(tokens[0].value)
         return Token("leslistes", res)
 
-    def si(self, tree): #todo
-        print(tree)
-        return self.visit_children(tree)
+    def si(self, tree):
+        test = self.visit(tree.children[0])
+        test = flattenList(test)[0]
+        #todo régler le problème de type
+        if test.type != "booléen" and test.type != "BOOLEEN":
+            pass #erreur
+
+        if test.value == "vrai":
+            for c in tree.children[1:]:
+                self.visit(c)
+        return test.value
 
     def sisinon(self, tree): #todo
-        return self.visit_children(tree)
+        test = self.visit(tree.children[0])
+
+        if test == "faux":
+            for c in tree.children[1:]:
+                self.visit(c)
 
     def tantque(self, tree): #todo
         return self.visit_children(tree)

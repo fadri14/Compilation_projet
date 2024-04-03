@@ -21,7 +21,8 @@ ajout.-5: "ajouter" exp "dans" exp | VARIABLE
 
 condition: si | sisinon
 si.-5: "si" exp "alors" "{" instruction* "}"
-sisinon.-4: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
+#sisinon.-4: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
+sisinon.-4: si "sinon" "{" instruction* "}"
 
 boucle: tantque | pourchaque
 tantque.-5: "tant" "que" exp "faire" "{" instruction* "}"
