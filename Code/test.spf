@@ -1,4 +1,4 @@
-
+pour chaque entier n dans [1, 2, [3, 4]] faire { afficher n; }
 
 # OK
 #texte coucou = "coucou";
@@ -26,6 +26,8 @@
 #si vrai alors { si vrai alors { afficher "1"; } sinon { afficher "2"; } } sinon { afficher "3"; }
 #entier i = 0; tant que i < 10 faire { afficher i; i = i + 1; }
 #texte mot = "bonjour"; entier i = 1; tant que i <= taille mot faire { afficher mot[i]; i = i+1; }
+#pour chaque texte lettre dans "neovim" faire { texte prefix = "je demande un '"; texte postfix = "'"; afficher prefix, lettre, postfix; } afficher "NEOVIM!";
+
 
 
 # Problème

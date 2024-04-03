@@ -13,6 +13,7 @@ from copy import deepcopy
 # faire la gestion d'erreur
 # corriger les problèmes de calculs
 # gérer l'addition pour les textes et les listes
+# gérer le variable doubles dans les boucles
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
@@ -101,7 +102,7 @@ class MyInterpreter(Interpreter):
             for c in tree.children[1:]:
                 self.visit(c)
 
-    def tantque(self, tree): #todo
+    def tantque(self, tree):
         tree_copy = deepcopy(tree)
         while True:
             test = self.visit(tree.children[0])
@@ -118,7 +119,21 @@ class MyInterpreter(Interpreter):
                 break
 
     def pourchaque(self, tree): #todo
-        return self.visit_children(tree)
+        tree_copy = deepcopy(tree)
+
+        var = back.Variable()
+        var.typeof = tree.children[0].value
+        var.name = tree.children[1].value
+        memo.declare(var)
+
+        iter = self.visit(tree.children[2])
+        iter = flattenList(iter)[0].value
+
+        for t in iter:
+            memo.set(var.name, t)
+            for i in tree.children[3:]:
+                self.visit(i)
+            tree = deepcopy(tree_copy)
 
     def exp(self, tree):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
