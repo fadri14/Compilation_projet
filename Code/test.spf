@@ -1,4 +1,7 @@
-
+booléen drapeau = vrai;
+if drapeau alors {
+    afficher "gg wp";
+}
 
 
 

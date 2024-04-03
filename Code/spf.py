@@ -82,6 +82,7 @@ class MyInterpreter(Interpreter):
         return Token("leslistes", res)
 
     def si(self, tree): #todo
+        print(tree)
         return self.visit_children(tree)
 
     def sisinon(self, tree): #todo
