@@ -75,11 +75,12 @@ class MyInterpreter(Interpreter):
         for i in range(len(tokens)):
             if tokens[i].type == "TEXTE":
                 res += str(tokens[i].value)
-            #new
-            elif tokens[i].type == "liste":
-                res = []
+            #new (gestion types liste)
+            elif tokens[i].type == "liste" and isinstance(tokens[i].value[0], tuple):
+                l = []
                 for j in range(len(tokens[i].value)):
-                    res.append((tokens[i].value[j][0]))
+                    l.append((tokens[i].value[j][0]))
+                res += str(l)
             else:
                 res += str(tokens[i].value)
             if i != len(tokens) -1:
@@ -145,9 +146,18 @@ class MyInterpreter(Interpreter):
         iter = self.visit(tree.children[2])
         iter = flattenList(iter)[0].value
 
+        #new (gestion types liste)
+        if(isinstance(iter, list) and isinstance(iter[0], tuple)):
+            res = []
+            for i in range(len(iter)):
+                res.append(iter[i][0])
+                
+            iter = res
+
         for t in iter:
             memo.set(var.name, t)
             for i in tree.children[3:]:
+                
                 self.visit(i)
             tree = deepcopy(tree_copy)
         memo.delete(var.name)
@@ -178,7 +188,7 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
         #new
-        #Liste de tuples [("hey", TEXTE),....]
+        #Liste de tuples [("hey", TEXTE),....] (gestion types liste)
         l = []
         for t in tokens:
             elem = (t.value, t.type)
@@ -256,7 +266,7 @@ class MyInterpreter(Interpreter):
                 if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
                     pass #erreur SPFIndexError
                 else:
-                    #new
+                    #new (gestion types liste)
                     if(tokens[0].type == "liste"):
                         return Token(tokens[0].value[tokens[1].value-1][1], tokens[0].value[tokens[1].value-1][0])
 

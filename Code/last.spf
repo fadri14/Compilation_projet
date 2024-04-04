@@ -1,0 +1,20 @@
+## Identifier les mots d’un texte
+texte phrase = "Bonjour à tout le monde";
+texte mot = "";
+liste mots = [];
+pour chaque texte caractère dans phrase faire {
+si caractère vaut " " alors {
+si taille mot > 0 alors {
+ajouter mot dans mots;
+#afficher mots;
+mot = "";
+}
+} sinon {
+mot = mot + caractère;
+}
+}
+# Potentiel dernier mot
+si taille mot > 0 alors {
+ajouter mot dans mots;
+}
+afficher mots;
