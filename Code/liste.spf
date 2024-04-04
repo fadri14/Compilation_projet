@@ -6,6 +6,7 @@ afficher "bouh", [1,"hzy", 3];
 
 afficher "bouh", [1,"hzy", 3], 3;
 
+afficher [];
 ###  exemple projet
 ## Recherche d’un maximum
 liste nombres = [1, 8, 3, 6];

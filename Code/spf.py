@@ -1,6 +1,5 @@
 import sys
 import argparse
-import re
 from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.exception as error
@@ -8,7 +7,7 @@ import modules.backend as back
 from copy import deepcopy
 
 #todo:
-# comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
+# comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
 #   quand c'est uniquement un booléen, c'est correct. le problème est dans une liste
 # faire la gestion d'erreur
 # corriger les problèmes à trois composants (calculs ...)
@@ -75,14 +74,26 @@ class MyInterpreter(Interpreter):
         for i in range(len(tokens)):
             if tokens[i].type == "TEXTE":
                 res += str(tokens[i].value)
+
             #new (gestion types liste)
-            elif tokens[i].type == "liste" and isinstance(tokens[i].value[0], tuple):
-                l = []
-                for j in range(len(tokens[i].value)):
-                    l.append((tokens[i].value[j][0]))
-                res += str(l)
+            elif tokens[i].type == "liste" and len(res) != 0  and isinstance(tokens[i].value[0], tuple):
+                tmp = tokens[i].value
+                l = "["
+                for j in range(len(tmp)):
+                    #new Le soucis de ' ds la liste pour les booléens A revoir ???
+                    if tmp[j][1] == "BOOLEEN" or tmp[j][1] == "ENTIER":
+                        l +=  str(tmp[j][0]) 
+                    else:
+                        l += "'" + str(tmp[j][0]) + "'"
+
+                    if(j != len(tmp)-1):
+                        l += ", "
+
+                res += l + "]"
+
             else:
                 res += str(tokens[i].value)
+
             if i != len(tokens) -1:
                 res += " "
 

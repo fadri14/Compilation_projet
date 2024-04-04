@@ -100,8 +100,23 @@ class Variable(): # Représente une variable
         self.value = None
 
     def __str__(self):
-        #Le soucis de ' ds la liste pour les booléens    
-        return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {self.value}"
+        res = self.value
+        if isinstance(res, list) and len(res) != 0 and isinstance(res[0], tuple): #new (gestion types liste)
+                l = "["
+                for i in range(len(res)):
+                    #new Le soucis de ' ds la liste pour les booléens A revoir ???
+                    if res[i][1] == "BOOLEEN" or res[i][1] == "ENTIER":
+                        l +=  str(res[i][0]) 
+
+                    else:
+                        l += "'" + str(res[i][0]) + "'"
+
+                    if(i != len(res)-1):
+                        l += ", "
+
+                res = l + "]"
+            
+        return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {res}"
 
 class Value(): # Effectue les calcules
     def deco(self, tokens, type_tokens, func):
