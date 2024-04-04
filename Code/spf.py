@@ -66,7 +66,14 @@ class MyInterpreter(Interpreter):
         token = self.visit_children(tree)
         token = flattenList(token)
         
-        memo.set(token[0].value, token[1].value)
+        #new SPFUnknownVariable
+        try:
+            memo.set(token[0].value, token[1].value)
+        except SPFUnknownVariable as e:
+                e.line = token[0].line
+                e.updateError() 
+                print(e.error)
+                sys.exit(0)
 
     def afficher(self, tree):
         tokens = self.visit_children(tree)
@@ -112,14 +119,8 @@ class MyInterpreter(Interpreter):
         res = var.value
         res.append(tokens[0].value)
 
-        #new SPFUnknownVariable
-        try:
-            memo.set(var.name, res)
-        except SPFUnknownVariable as e:
-                e.line = tokens[1].line
-                e.updateError() 
-                print(e.error)
-                sys.exit(0)
+ 
+        memo.set(var.name, res)
         
         return Token("leslistes", res)
 
