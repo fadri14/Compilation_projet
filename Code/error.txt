@@ -1,0 +1,12 @@
+
+--- Mémoire final ---
+
+| nom: nombres     | type: liste   | valeur: [3, 3, 6, 7, 8]
+| nom: maximum     | type: entier  | valeur: 8
+| nom: nombre      | type: entier  | valeur: 0
+| nom: factorielle | type: entier  | valeur: 120
+| nom: monotone    | type: booléen | valeur: vrai
+| nom: phrase      | type: texte   | valeur: Bonjour à tout le monde
+| nom: mot         | type: texte   | valeur: monde
+| nom: mots        | type: liste   | valeur: ['Bonjour', 'à', 'tout', 'le', 'monde']
+

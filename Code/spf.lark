@@ -17,11 +17,10 @@ assignation.-5: VARIABLE "=" exp ";"
 
 afficher.-5: "afficher" ((exp | ajout) ",")* (exp | ajout) ";"
 
-ajout.-5: "ajouter" exp "dans" VARIABLE #| exp
+ajout.-5: "ajouter" exp "dans" VARIABLE
 
 condition: si | sisinon
 si.-5: "si" exp "alors" "{" instruction* "}"
-#sisinon.-4: "si" exp "alors" "{" instruction* "}" "sinon" "{" instruction* "}"
 sisinon.-4: si "sinon" "{" instruction* "}"
 
 boucle: tantque | pourchaque

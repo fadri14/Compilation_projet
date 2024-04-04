@@ -1,3 +1,4 @@
+import sys
 from enum import Enum
 from copy import deepcopy
 
@@ -25,7 +26,7 @@ class Memory(): # Stocke les variables
             pass #erreur
 
         if self.flag_debug:
-            print("déclaration:".ljust(15), var)
+            print("déclaration:".ljust(15), var, file=sys.stderr)
 
         if force and var.name in self.dico.keys():
             t = self.dico.get(var.name)
@@ -48,8 +49,9 @@ class Memory(): # Stocke les variables
             pass #erreur
 
         if self.flag_debug:
-            print("accès:".ljust(15), var)
+            print("accès:".ljust(15), var, file=sys.stderr)
 
+        '''
         match var.typeof:
             case "booléen":
                 var.typeof = "BOOLEEN"
@@ -57,6 +59,13 @@ class Memory(): # Stocke les variables
                 var.typeof = "ENTIER"
             case "texte":
                 var.typeof = "TEXTE"
+        '''
+        if var.typeof == "booléen":
+            var.typeof = "BOOLEEN"
+        elif var.typeof == "entier":
+            var.typeof = "ENTIER"
+        elif var.typeof == "texte":
+            var.typeof = "TEXTE"
 
         return var
 
@@ -67,7 +76,7 @@ class Memory(): # Stocke les variables
         self.dico.get(name).value = value
 
         if self.flag_debug:
-            print("modification:".ljust(15), self.dico.get(name))
+            print("modification:".ljust(15), self.dico.get(name), file=sys.stderr)
 
     def delete(self, name):
         del self.dico[name]
@@ -75,10 +84,6 @@ class Memory(): # Stocke les variables
             d = self.tmp.get(name)
             self.dico[d.name] = d
             del self.tmp[name]
-
-    # ne sert à rien…
-    def typeof(self, name):
-        return (memo.get(var)).typeof
 
     def __str__(self):
         res = ""
@@ -95,6 +100,7 @@ class Variable(): # Représente une variable
         self.value = None
 
     def __str__(self):
+        #Le soucis de ' ds la liste pour les booléens    
         return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {self.value}"
 
 class Value(): # Effectue les calcules

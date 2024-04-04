@@ -11,8 +11,8 @@ from copy import deepcopy
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')]
 #   quand c'est uniquement un booléen, c'est correct. le problème est dans une liste
 # faire la gestion d'erreur
-# corriger les problèmes à trois composants
-# gérer les différents types d'un indice voir todo
+# corriger les problèmes à trois composants (calculs ...)
+# gérer les différents types d'un indice voir todo OK
 
 #note:
 # peut-on avoir des " dans une chaine de caractère
@@ -75,6 +75,11 @@ class MyInterpreter(Interpreter):
         for i in range(len(tokens)):
             if tokens[i].type == "TEXTE":
                 res += str(tokens[i].value)
+            #new
+            elif tokens[i].type == "liste":
+                res = []
+                for j in range(len(tokens[i].value)):
+                    res.append((tokens[i].value[j][0]))
             else:
                 res += str(tokens[i].value)
             if i != len(tokens) -1:
@@ -99,7 +104,6 @@ class MyInterpreter(Interpreter):
     def si(self, tree):
         test = self.visit(tree.children[0])
         test = flattenList(test)[0]
-        #todo régler le problème de type
         if test.type != "BOOLEEN":
             pass #erreur
 
@@ -120,7 +124,6 @@ class MyInterpreter(Interpreter):
         while True:
             test = self.visit(tree.children[0])
             test = flattenList(test)[0]
-            #todo régler le problème de type
             if test.type != "BOOLEEN":
                 pass #erreur
 
@@ -174,9 +177,12 @@ class MyInterpreter(Interpreter):
     def liste(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
+        #new
+        #Liste de tuples [("hey", TEXTE),....]
         l = []
         for t in tokens:
-            l.append(t.value)
+            elem = (t.value, t.type)
+            l.append(elem)
 
         return Token("liste", l)
 
@@ -250,7 +256,10 @@ class MyInterpreter(Interpreter):
                 if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
                     pass #erreur SPFIndexError
                 else:
-                    #todo ca peut être tous les types, que faire ?
+                    #new
+                    if(tokens[0].type == "liste"):
+                        return Token(tokens[0].value[tokens[1].value-1][1], tokens[0].value[tokens[1].value-1][0])
+
                     return Token("TEXTE", tokens[0].value[tokens[1].value-1])
             else:
                 pass #erreur
@@ -278,8 +287,8 @@ if __name__ == '__main__':
     interpreter.visit(tree)
 
     if args.memory:
-        print("\n--- Mémoire final ---\n")
-        print(memo)
+        print("\n--- Mémoire final ---\n", file=sys.stderr)
+        print(memo, file=sys.stderr)
 
     """
     try:

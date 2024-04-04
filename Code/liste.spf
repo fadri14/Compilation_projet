@@ -1,0 +1,3 @@
+afficher [1,"Bonjour", vrai];
+afficher [1,"Bonjour", vrai][1];
+afficher "hey"[2];

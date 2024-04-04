@@ -90,3 +90,4 @@ si taille mot > 0 alors {
 ajouter mot dans mots;
 }
 afficher mots;
+
