@@ -2,9 +2,9 @@ import sys
 import argparse
 from lark import Lark, Token
 from lark.visitors import Interpreter
-import modules.exception as error
 import modules.backend as back
 from copy import deepcopy
+from modules.exception import SPFUnknownVariable
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
@@ -65,6 +65,7 @@ class MyInterpreter(Interpreter):
     def assignation(self, tree):
         token = self.visit_children(tree)
         token = flattenList(token)
+        
         memo.set(token[0].value, token[1].value)
 
     def afficher(self, tree):
@@ -110,7 +111,16 @@ class MyInterpreter(Interpreter):
 
         res = var.value
         res.append(tokens[0].value)
-        memo.set(var.name, res)
+
+        #new SPFUnknownVariable
+        try:
+            memo.set(var.name, res)
+        except SPFUnknownVariable as e:
+                e.line = tokens[1].line
+                e.updateError() 
+                print(e.error)
+                sys.exit(0)
+        
         return Token("leslistes", res)
 
     def si(self, tree):
@@ -248,7 +258,7 @@ class MyInterpreter(Interpreter):
     def addition(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-        
+
         if tokens[0].type != tokens[1].type:
             pass #erreur
 
@@ -301,12 +311,13 @@ if __name__ == '__main__':
     args = parser_argument.parse_args()
 
     memo = back.Memory(args.debug)
+    
     value = back.Value()
 
     with open(args.file) as f:
         tree = parser.parse(f.read())
     interpreter.visit(tree)
-
+    
     if args.memory:
         print("\n--- Mémoire final ---\n", file=sys.stderr)
         print(memo, file=sys.stderr)

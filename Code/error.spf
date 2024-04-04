@@ -1,0 +1,8 @@
+### Problème
+#entier n = 1 + 10 - 8 * 8 + 8;
+#booléen bool = non faux et vrai;
+entier a = 10;
+afficher a;
+pam = "bou";
+entier b = 2;
+afficher b;

@@ -1,6 +1,7 @@
 import sys
 from enum import Enum
 from copy import deepcopy
+from modules.exception import SPFUnknownVariable
 
 class Type(Enum):
     ENTIER = 1
@@ -41,7 +42,8 @@ class Memory(): # Stocke les variables
 
     def get(self, name):
         if not name in self.dico.keys():
-            pass #erreur SPFUnknownVariable
+            #new SPFUnknownVariable
+            raise SPFUnknownVariable(name)
 
         var = deepcopy(self.dico.get(name))
 
@@ -71,7 +73,8 @@ class Memory(): # Stocke les variables
 
     def set(self, name, value):
         if not name in self.dico.keys():
-            pass #erreur SPFUnknownVariable
+            #new SPFUnknownVariable
+            raise SPFUnknownVariable(name, 0)
 
         self.dico.get(name).value = value
 
