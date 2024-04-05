@@ -43,7 +43,7 @@ class Memory(): # Stocke les variables
     def get(self, name):
         if not name in self.dico.keys():
             #new SPFUnknownVariable
-            raise SPFUnknownVariable(name)
+            raise SPFUnknownVariable(name, 0)
 
         var = deepcopy(self.dico.get(name))
 

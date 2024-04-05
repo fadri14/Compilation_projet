@@ -108,24 +108,38 @@ class MyInterpreter(Interpreter):
         print(res)
 
     def ajout(self, tree):
+        #ajouter [1,2] dans [4,2,1, "b"]; Doit-on gérer ?
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
-        #ICI
-        var = memo.get(tokens[1].value)
+        #new SPFUnknownVariable 
+        try:
+            var = memo.get(tokens[1].value)
+        except SPFUnknownVariable as e:
+                e.line = tokens[1].line
+                e.updateError() 
+                print(e.error)
+                sys.exit(0)
 
         if var.typeof != "liste":
             pass #erreur
 
         res = var.value
-        print(tokens[0])
-        
+
         #new (gestion types liste)
         elem = (tokens[0].value, tokens[0].type)
         res.append(elem)
- 
-        memo.set(var.name, res)
-        
+
+        #new SPFUnknownVariable
+        try:
+            memo.set(var.name, res)
+        except SPFUnknownVariable as e:
+                print("chech")
+                e.line = tokens[0].line
+                e.updateError() 
+                print(e.error)
+                sys.exit(0)
+
         return Token("leslistes", res)
 
     def si(self, tree):
@@ -181,6 +195,7 @@ class MyInterpreter(Interpreter):
             iter = res
 
         for t in iter:
+            #new SPFUnknownVariable pas nécessaire ici?
             memo.set(var.name, t)
             for i in tree.children[3:]:
                 
@@ -191,7 +206,15 @@ class MyInterpreter(Interpreter):
     def exp(self, tree):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
             if token.type == "VARIABLE":
-                var = memo.get(token.value)
+                #new SPFUnknownVariable
+                try:
+                    var = memo.get(token.value)
+                except SPFUnknownVariable as e:
+                        e.line = token.line
+                        e.updateError() 
+                        print(e.error)
+                        sys.exit(0)
+                
                 token.type, token.value = var.typeof, var.value
         return self.visit_children(tree)
 
