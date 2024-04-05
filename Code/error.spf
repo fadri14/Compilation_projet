@@ -30,3 +30,5 @@ afficher test[3];
 
 texte mot = "huhu";
 afficher mot[1];
+
+1<"olo";

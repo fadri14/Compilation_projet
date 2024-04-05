@@ -1,7 +1,7 @@
 import sys
 from enum import Enum
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable, SPFAlreadyDefined
+from modules.exception import SPFUnknownVariable, SPFAlreadyDefined, SPFIncompatibleType
 
 class Type(Enum):
     ENTIER = 1
@@ -137,11 +137,12 @@ class Variable(): # Représente une variable
             
         return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {res}"
 
-class Value(): # Effectue les calcules
+class Value(): # Effectue les calculs
     def deco(self, tokens, type_tokens, func):
         for t in tokens:
             if t.type != type_tokens:
-                    pass #erreur
+                    #new SPFIncompatibleType
+                    raise SPFIncompatibleType(t.value, t.type, type_tokens, t.line)
 
         if func(tokens):
             return "vrai"
@@ -149,7 +150,8 @@ class Value(): # Effectue les calcules
 
     def egalite(self, tokens):
         if tokens[0].type != tokens[1].type:
-            pass #erreur
+            #new SPFIncompatibleType
+            raise SPFIncompatibleType(tokens[0].value, tokens[0].type, tokens[1].type, tokens[0].line)
 
         if tokens[0].value == tokens[1].value:
             return "vrai"
@@ -160,30 +162,60 @@ class Value(): # Effectue les calcules
             return "faux"
         return "vrai"
 
+    #new SPFIncompatibleType
     def pluspetit(self, tokens):
-        return self.deco(tokens, "ENTIER", lambda args : args[0].value < args[1].value)
+        try:
+            return self.deco(tokens, "ENTIER", lambda args : args[0].value < args[1].value)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def plusgrand(self, tokens):
-        return self.deco(tokens, "ENTIER", lambda args : args[0].value > args[1].value)
+        try:
+            return self.deco(tokens, "ENTIER", lambda args : args[0].value > args[1].value)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def pluspetitouegal(self, tokens):
-        return self.deco(tokens, "ENTIER", lambda args : args[0].value <= args[1].value)
+        try:
+            return self.deco(tokens, "ENTIER", lambda args : args[0].value <= args[1].value)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def plusgrandouegal(self, tokens):
-        return self.deco(tokens, "ENTIER", lambda args : args[0].value >= args[1].value)
+        try:
+            return self.deco(tokens, "ENTIER", lambda args : args[0].value >= args[1].value)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def et(self, tokens):
-        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" and args[1].value == "vrai")
+        try:
+            return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" and args[1].value == "vrai")
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def ou(self, tokens):
-        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" or args[1].value == "vrai")
+        try:
+            return self.deco(tokens, "BOOLEEN", lambda args : args[0].value == "vrai" or args[1].value == "vrai")
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def non(self, tokens):
-        return self.deco(tokens, "BOOLEEN", lambda args : args[0].value != "vrai")
+        try:
+            return self.deco(tokens, "BOOLEEN", lambda args : args[0].value != "vrai")
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def negation(self, token):
         if token[0].type != "ENTIER":
-                    pass #erreur
+            #new SPFIncompatibleType
+            raise SPFIncompatibleType(token[0].value, token[0].type, "ENTIER", token[0].line)
 
         return - token[0].value
 
@@ -191,7 +223,11 @@ class Value(): # Effectue les calcules
     def calcul(self, tokens, operation):
         for t in tokens:
             if t.type != "ENTIER":
-                pass #erreur
+                #L'erreur cause problème à la ligne 86 du fichier test.spf
+                #Pourquoi on ne vérifie pas si tous les t sont de mêmes types ?
+                #new SPFIncompatibleType
+                #raise SPFIncompatibleType(t.value, t.type, "ENTIER", t.line)
+                pass
 
         return operation(tokens[0].value, tokens[1].value)
 

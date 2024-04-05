@@ -4,7 +4,7 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFException
+from modules.exception import SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
@@ -132,8 +132,13 @@ class MyInterpreter(Interpreter):
                 print(e.error)
                 sys.exit(0)
 
-        if var.typeof != "liste":
-            pass #erreur
+        try:
+            #new SPFIncompatibleType
+            if var.typeof != "liste":
+                raise SPFIncompatibleType(var.value, var.typeof, "BOOLEEN", tokens[1].line)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
         res = var.value
 
@@ -155,8 +160,14 @@ class MyInterpreter(Interpreter):
     def si(self, tree):
         test = self.visit(tree.children[0])
         test = flattenList(test)[0]
-        if test.type != "BOOLEEN":
-            pass #erreur
+
+        try:
+            #new SPFIncompatibleType
+            if test.type != "BOOLEEN":
+                raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
         if test.value == "vrai":
             for i in tree.children[1:]:
@@ -175,8 +186,13 @@ class MyInterpreter(Interpreter):
         while True:
             test = self.visit(tree.children[0])
             test = flattenList(test)[0]
-            if test.type != "BOOLEEN":
-                pass #erreur
+            try:
+                if test.type != "BOOLEEN":
+                    #new SPFIncompatibleType
+                    raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
+            except SPFIncompatibleType as e:
+                print(e.error)
+                sys.exit(0)
 
             if test.value == "vrai":
                 for i in tree.children[1:]:
@@ -267,10 +283,18 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def egalite(self, tree):
-        return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
+        try:
+            return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def nonegalite(self, tree):
-        return self.deco(tree, "BOOLEEN", lambda tokens: value.nonegalite(tokens))
+        try:
+            return self.deco(tree, "BOOLEEN", lambda tokens: value.nonegalite(tokens))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def pluspetit(self, tree):
         return self.deco(tree, "BOOLEEN", lambda tokens: value.pluspetit(tokens))
@@ -300,24 +324,41 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
-        if tokens[0].type != tokens[1].type:
-            pass #erreur
+        try:
+            if tokens[0].type != tokens[1].type:
+                #new SPFIncompatibleType
+                raise SPFIncompatibleType(tokens[0].value, tokens[0].type, tokens[1].type, tokens[0].line)
 
-        if tokens[0].type == "liste":
-            res = tokens[0].value
-            res.extend(tokens[1].value)
-            return Token("liste", res)
-        else:
-            return Token(tokens[0].type, value.calcul(tokens, lambda n1, n2: n1 + n2))
+            if tokens[0].type == "liste":
+                res = tokens[0].value
+                res.extend(tokens[1].value)
+                return Token("liste", res)
+            else:
+                return Token(tokens[0].type, value.calcul(tokens, lambda n1, n2: n1 + n2))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def soustraction(self, tree):
-        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
+        try:
+            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def multiplication(self, tree):
-        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 * n2))
+        try:
+            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 * n2))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def division(self, tree):
-        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 / n2))
+        try:
+            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 / n2))
+        except SPFIncompatibleType as e:
+            print(e.error)
+            sys.exit(0)
 
     def indice(self, tree):
         tokens = self.visit_children(tree)
@@ -340,10 +381,15 @@ class MyInterpreter(Interpreter):
 
                         return Token("TEXTE", tokens[0].value[tokens[1].value-1])
                 else:
-                    pass #erreur
+                    #new SPFIncompatibleType
+                    raise SPFIncompatibleType(tokens[0].value, tokens[0].type, "TEXTE ou liste", tokens[0].line)
             else:
-                pass #erreur
+                #new SPFIncompatibleType
+                raise SPFIncompatibleType(tokens[1].value, tokens[1].type, "ENTIER", tokens[1].line)
         except SPFIndexError as e:
+            print(e.error)
+            sys.exit(0)
+        except SPFIncompatibleType as e:
             print(e.error)
             sys.exit(0)
 
