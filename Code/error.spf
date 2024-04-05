@@ -3,6 +3,14 @@
 #booléen bool = non faux et vrai;
 entier a = 10;
 afficher a;
-pam = "bou";
+#pam = "bou";
 entier b = 2;
 afficher b;
+
+
+liste a = [4,2,1, "b"];
+afficher a;
+#ajouter [1,2] dans a; Doit-on gérer ?
+
+ajouter n dans a;
+afficher a;

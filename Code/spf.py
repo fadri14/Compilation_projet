@@ -84,7 +84,7 @@ class MyInterpreter(Interpreter):
                 res += str(tokens[i].value)
 
             #new (gestion types liste)
-            elif tokens[i].type == "liste" and len(res) != 0  and isinstance(tokens[i].value[0], tuple):
+            elif tokens[i].type == "liste" and len(tokens[i]) != 0  and isinstance(tokens[i].value[0], tuple):
                 tmp = tokens[i].value
                 l = "["
                 for j in range(len(tmp)):
@@ -111,14 +111,18 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
+        #ICI
         var = memo.get(tokens[1].value)
 
         if var.typeof != "liste":
             pass #erreur
 
         res = var.value
-        res.append(tokens[0].value)
-
+        print(tokens[0])
+        
+        #new (gestion types liste)
+        elem = (tokens[0].value, tokens[0].type)
+        res.append(elem)
  
         memo.set(var.name, res)
         
