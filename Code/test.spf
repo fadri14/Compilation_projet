@@ -58,17 +58,18 @@ nombre = nombre - 1;
 afficher "La factorielle vaut", factorielle;
 
 ## Monotonicité d’une liste
-liste nombres = [3, 3, 6, 7, 8];
+liste nombres2 = [3, 3, 6, 7, 8]; #SPFUnknownVariable : la variable  'nombres' à la ligne 61 a déjà été déclarée à la ligne 40 !
+
 booléen monotone = vrai;
-pour chaque entier position dans [1:taille nombres - 1] faire {
-si nombres[position] > nombres[position + 1] alors {
+pour chaque entier position dans [1:taille nombres2 - 1] faire {
+si nombres2[position] > nombres2[position + 1] alors {
 monotone = faux;
 }
 }
 si monotone alors {
-afficher "La liste", nombres, "est monotone";
+afficher "La liste", nombres2, "est monotone";
 } sinon {
-afficher "La liste", nombres, "n'est pas monotone";
+afficher "La liste", nombres2, "n'est pas monotone";
 }
 
 ## Identifier les mots d’un texte

@@ -54,7 +54,6 @@ class MyInterpreter(Interpreter):
         var = back.Variable()
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-
         var.typeof = tokens[0].value
         var.name = tokens[1].value
         if len(tokens) == 3:
@@ -62,9 +61,9 @@ class MyInterpreter(Interpreter):
 
         #new SPFAlreadyDefined
         try:
-            memo.declare(var)
+            memo.declare(var, False, tokens[0].line) #new traceback
         except SPFAlreadyDefined as e:
-                e.line = tokens[0].line
+                e.line1 = tokens[0].line
                 e.updateError() 
                 print(e.error)
                 sys.exit(0)
@@ -91,7 +90,7 @@ class MyInterpreter(Interpreter):
                 res += str(tokens[i].value)
 
             #new (gestion types liste)
-            elif tokens[i].type == "liste" and len(tokens[i]) != 0  and isinstance(tokens[i].value[0], tuple):
+            elif tokens[i].type == "liste" and len(tokens[i].value) != 0  and isinstance(tokens[i].value[0], tuple):
                 tmp = tokens[i].value
                 l = "["
                 for j in range(len(tmp)):

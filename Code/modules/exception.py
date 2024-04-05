@@ -23,13 +23,14 @@ class SPFUninitializedVariable(SPFException):
 
 #new SPFAlreadyDefined
 class SPFAlreadyDefined(SPFException):
-    def __init__(self, variable, line):
+    def __init__(self, variable, line1, line2):
         self.variable = variable
-        self.line = line
+        self.line1 = line1
+        self.line2 = line2 #traceback
         self.updateError()
 
     def updateError(self):
-        error = f"SPFUnknownVariable : la variable  '{self.variable}' à la ligne {self.line} a déjà été déclarée !"
+        error = f"SPFUnknownVariable : la variable  '{self.variable}' à la ligne {self.line1} a déjà été déclarée à la ligne {self.line2} !"
         super().__init__(error)
 
 class SPFIncompatibleType(SPFException):

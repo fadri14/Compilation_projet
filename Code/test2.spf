@@ -7,6 +7,7 @@ afficher "bouh", [1,"hzy", 3];
 afficher "bouh", [1,"hzy", 3], 3;
 
 afficher [];
+
 ###  exemple projet
 ## Recherche d’un maximum
 liste nombres = [1, 8, 3, 6];
@@ -24,8 +25,8 @@ pour chaque texte caract dans test faire {
 afficher caract;
 }
 
-liste test = ["bou",1, vrai];
-pour chaque texte caract dans test faire {
+liste boup = ["bou",1, vrai];
+pour chaque texte caract dans boup faire {
 afficher caract;
 }
 
@@ -41,15 +42,15 @@ i = i +1;
 }
 
 ## Monotonicité d’une liste
-liste nombres = [3, 3, 6, 7, 8];
+liste nombres2 = [3, 3, 6, 7, 8];
 booléen monotone = vrai;
-pour chaque entier position dans [1:taille nombres - 1] faire {
-si nombres[position] > nombres[position + 1] alors {
+pour chaque entier position dans [1:taille nombres2 - 1] faire {
+si nombres2[position] > nombres2[position + 1] alors {
 monotone = faux;
 }
 }
 si monotone alors {
-afficher "La liste", nombres, "est monotone";
+afficher "La liste", nombres2, "est monotone";
 } sinon {
-afficher "La liste", nombres, "n'est pas monotone";
+afficher "La liste", nombres2, "n'est pas monotone";
 }

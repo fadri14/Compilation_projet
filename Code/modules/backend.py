@@ -16,16 +16,27 @@ class Memory(): # Stocke les variables
         self.flag_debug = flag_debug
         self.dico = {}
         self.tmp = {}
-        #new
-        #self.variableLine = []
+        #new traceback
+        self.variableLine = []
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
     # on force quand on crée la variable d'une boucle
-    def declare(self, var, force = False):
+    def declare(self, var, force, line = -1):
         #new SPFAlreadyDefined
         if not force and var.name in self.dico.keys():
-            #print("HERE " + str(list(self.dico.keys()).index(var.name)) + str(self.dico.keys()))
-            raise SPFAlreadyDefined(var.name, 0)
+            #new traceback
+            index = []
+            for key in self.dico:
+                if key == var.name:
+                    index.append(list(self.dico.keys()).index(key)) 
+                    #Récupérer tous les indices où le mot apparaît dans le dico
+                    #car on peut s'arrêter sur un nom créé dans une boucle ie line = -1 
+
+            for i in index:
+                if(index != -1):
+                    index = list(self.dico.keys()).index(var.name)
+
+            raise SPFAlreadyDefined(var.name, 0, self.variableLine[index])
 
         if var.name in self.keyword:
             pass #erreur
@@ -43,6 +54,7 @@ class Memory(): # Stocke les variables
             max = len(var.name)
 
         self.dico[var.name] = var
+        self.variableLine.append(line) #traceback
 
     def get(self, name):
         if not name in self.dico.keys():

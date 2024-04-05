@@ -4,13 +4,26 @@
 #entier a = 10;
 #afficher a;
 #pam = "bou";
+
 #entier b = 2;
 #afficher b;
+#b = 5;
 
-liste c;
-liste a = [4,2,1, "b"];
-afficher a;
-liste a = [1];
+#liste c;
+#liste a = [4,2,1, "b"];
+
+#afficher a;
+#liste a = [1];
 
 #ajouter 1 dans u;
 #afficher a;
+
+texte test = "bou";
+pour chaque texte caract dans test faire {
+afficher caract;
+}
+
+liste test = ["bou",1, vrai];
+pour chaque texte caract dans test faire {
+afficher caract;
+}
