@@ -4,7 +4,7 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable
+from modules.exception import SPFUnknownVariable, SPFAlreadyDefined
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
@@ -16,7 +16,7 @@ from modules.exception import SPFUnknownVariable
 #note:
 # peut-on avoir des " dans une chaine de caractère
 # est-ce que ajout est une expression ?
-# des erreurs sont déjà localisées: SPFUnknownVariable SPFUninitializedVariable SPFAlreadyDefined SPFIndexError
+# des erreurs sont déjà localisées: SPFUnknownVariable ok SPFUninitializedVariable SPFAlreadyDefined SPFIndexError
 
 #erreur de l'assistant:
 #  Recherche d’un maximum: (les indices commencent à 1)
@@ -60,7 +60,14 @@ class MyInterpreter(Interpreter):
         if len(tokens) == 3:
             var.value = tokens[2].value
 
-        memo.declare(var)
+        #new SPFAlreadyDefined
+        try:
+            memo.declare(var)
+        except SPFAlreadyDefined as e:
+                e.line = tokens[0].line
+                e.updateError() 
+                print(e.error)
+                sys.exit(0)
 
     def assignation(self, tree):
         token = self.visit_children(tree)
@@ -181,6 +188,8 @@ class MyInterpreter(Interpreter):
         var = back.Variable()
         var.typeof = tree.children[0].value
         var.name = tree.children[1].value
+
+        #SPFAlreadyDefined - inutile ici ?
         memo.declare(var, True)
 
         iter = self.visit(tree.children[2])
@@ -201,6 +210,7 @@ class MyInterpreter(Interpreter):
                 
                 self.visit(i)
             tree = deepcopy(tree_copy)
+        #new SPFAlreadyDefined inutile
         memo.delete(var.name)
 
     def exp(self, tree):

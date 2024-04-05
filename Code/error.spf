@@ -7,10 +7,10 @@
 #entier b = 2;
 #afficher b;
 
-
+liste c;
 liste a = [4,2,1, "b"];
 afficher a;
-
+liste a = [1];
 
 #ajouter 1 dans u;
 #afficher a;

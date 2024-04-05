@@ -1,7 +1,7 @@
 import sys
 from enum import Enum
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable
+from modules.exception import SPFUnknownVariable, SPFAlreadyDefined
 
 class Type(Enum):
     ENTIER = 1
@@ -16,12 +16,16 @@ class Memory(): # Stocke les variables
         self.flag_debug = flag_debug
         self.dico = {}
         self.tmp = {}
+        #new
+        #self.variableLine = []
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
     # on force quand on crée la variable d'une boucle
     def declare(self, var, force = False):
-        if not force and not var.name in self.dico.keys():
-            pass #erreur SPFAlreadyDefined
+        #new SPFAlreadyDefined
+        if not force and var.name in self.dico.keys():
+            #print("HERE " + str(list(self.dico.keys()).index(var.name)) + str(self.dico.keys()))
+            raise SPFAlreadyDefined(var.name, 0)
 
         if var.name in self.keyword:
             pass #erreur
