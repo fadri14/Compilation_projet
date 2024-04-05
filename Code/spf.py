@@ -4,7 +4,7 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable, SPFAlreadyDefined
+from modules.exception import SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFException
 
 #todo:
 # comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
@@ -81,10 +81,25 @@ class MyInterpreter(Interpreter):
                 print(e.error)
                 sys.exit(0)
 
+    def printList(self, tmp):
+        l = "["
+        for j in range(len(tmp)):
+            #new Le soucis de ' ds la liste pour les booléens A revoir ???
+            if tmp[j][1] == "BOOLEEN" or tmp[j][1] == "ENTIER":
+                l +=  str(tmp[j][0]) 
+            else:
+                l += "'" + str(tmp[j][0]) + "'"
+
+            if(j != len(tmp)-1):
+                l += ", "
+        l += "]"
+        return l
+
     def afficher(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
         res = ""
+
         for i in range(len(tokens)):
             if tokens[i].type == "TEXTE":
                 res += str(tokens[i].value)
@@ -92,18 +107,8 @@ class MyInterpreter(Interpreter):
             #new (gestion types liste)
             elif tokens[i].type == "liste" and len(tokens[i].value) != 0  and isinstance(tokens[i].value[0], tuple):
                 tmp = tokens[i].value
-                l = "["
-                for j in range(len(tmp)):
-                    #new Le soucis de ' ds la liste pour les booléens A revoir ???
-                    if tmp[j][1] == "BOOLEEN" or tmp[j][1] == "ENTIER":
-                        l +=  str(tmp[j][0]) 
-                    else:
-                        l += "'" + str(tmp[j][0]) + "'"
-
-                    if(j != len(tmp)-1):
-                        l += ", "
-
-                res += l + "]"
+                l = self.printList(tmp)
+                res += l
 
             else:
                 res += str(tokens[i].value)
@@ -140,7 +145,6 @@ class MyInterpreter(Interpreter):
         try:
             memo.set(var.name, res)
         except SPFUnknownVariable as e:
-                print("chech")
                 e.line = tokens[0].line
                 e.updateError() 
                 print(e.error)
@@ -319,20 +323,29 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
-        if tokens[1].type == "ENTIER":
-            if tokens[0].type == "TEXTE" or tokens[0].type == "liste":
-                if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
-                    pass #erreur SPFIndexError
-                else:
-                    #new (gestion types liste)
-                    if(tokens[0].type == "liste"):
-                        return Token(tokens[0].value[tokens[1].value-1][1], tokens[0].value[tokens[1].value-1][0])
+        try: 
+            if tokens[1].type == "ENTIER":
+                if tokens[0].type == "TEXTE" or tokens[0].type == "liste":
+                    if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
+                        #new SPFIndexError
+                        value = tokens[0].value
+                        if tokens[0].type == "liste":
+                            value = self.printList(tokens[0].value)
 
-                    return Token("TEXTE", tokens[0].value[tokens[1].value-1])
+                        raise SPFIndexError(value, tokens[0].line, tokens[1].value)                    
+                    else:
+                        #new (gestion types liste)
+                        if(tokens[0].type == "liste"):
+                            return Token(tokens[0].value[tokens[1].value-1][1], tokens[0].value[tokens[1].value-1][0])
+
+                        return Token("TEXTE", tokens[0].value[tokens[1].value-1])
+                else:
+                    pass #erreur
             else:
                 pass #erreur
-        else:
-            pass #erreur
+        except SPFIndexError as e:
+            print(e.error)
+            sys.exit(0)
 
     def taille(self, tree):
         return self.deco(tree, "ENTIER", lambda tokens: len(tokens[0].value))

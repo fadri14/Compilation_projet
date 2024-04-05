@@ -30,14 +30,22 @@ class SPFAlreadyDefined(SPFException):
         self.updateError()
 
     def updateError(self):
-        error = f"SPFUnknownVariable : la variable  '{self.variable}' à la ligne {self.line1} a déjà été déclarée à la ligne {self.line2} !"
+        error = f"SPFAlreadyDefined : la variable  '{self.variable}' à la ligne {self.line1} a déjà été déclarée à la ligne {self.line2} !"
         super().__init__(error)
 
 class SPFIncompatibleType(SPFException):
     def __init__(self, error):
         self.error = error
 
+#new SPFIndexError
 class SPFIndexError(SPFException):
-    def __init__(self, error):
-        self.error = error
+    def __init__(self, variable, line, position):
+        self.variable = variable
+        self.line = line
+        self.position = position
+        self.updateError()
+    
+    def updateError(self):
+        error = f"SPFIndexError : La position {self.position} que vous utilisez sur la variable '{self.variable}' à la ligne {self.line} n'existe pas !"
+        super().__init__(error)
 

@@ -1,29 +1,32 @@
 ### Problème
 #entier n = 1 + 10 - 8 * 8 + 8;
 #booléen bool = non faux et vrai;
-#entier a = 10;
-#afficher a;
+entier az = 10;
+afficher az;
 #pam = "bou";
 
-#entier b = 2;
-#afficher b;
+entier b = 2;
+afficher b;
 #b = 5;
 
 #liste c;
-#liste a = [4,2,1, "b"];
+liste a = [4,2,1, "b"];
 
-#afficher a;
+afficher a;
 #liste a = [1];
+
+afficher "bouh", [1,3,vrai];
 
 #ajouter 1 dans u;
 #afficher a;
-
-texte test = "bou";
-pour chaque texte caract dans test faire {
-afficher caract;
-}
 
 liste test = ["bou",1, vrai];
 pour chaque texte caract dans test faire {
 afficher caract;
 }
+
+afficher test[3];
+#afficher test[4];
+
+texte mot = "huhu";
+afficher mot[1];
