@@ -4,28 +4,15 @@ from lark import Lark, Token
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType
+from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType
 
 #todo:
-# comment afficher les booléens sans ' : [Token('BOOLEEN', 'vrai')] OK
-#   quand c'est uniquement un booléen, c'est correct. le problème est dans une liste
-# faire la gestion d'erreur
-# corriger les problèmes à trois composants (calculs ...)
-# gérer les différents types d'un indice voir todo OK
-
-#note:
-# peut-on avoir des " dans une chaine de caractère
-# est-ce que ajout est une expression ?
-# des erreurs sont déjà localisées: SPFUnknownVariable ok SPFUninitializedVariable SPFAlreadyDefined SPFIndexError
-
-#erreur de l'assistant:
-#  Recherche d’un maximum: (les indices commencent à 1)
-#    maximum = nombres[0];
-#  Monotonicité d’une liste: (c'est pas liste mais nombres)
-#    pour chaque entier position dans [1:taille liste - 1] faire {
-#      si liste[position] > liste[position + 1] alors {
-#  Identifier les mots d’un texte: (oublie de "faire")
-#    pour chaque texte caractère dans phrase {
+# changer toutes types dans les messages d'erreurs pour les mettres en minuscule
+# régler l'exemple de boucle pour chaque donné dans le pdf
+# réessayer plusieurs composanstes
+# faire les priorités des opérations
+# chercher toutes les erreurs de types incompatibles
+# faire la gestion d'erreur pour la syntaxe
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -37,7 +24,24 @@ def flattenList(l):
             resultat.append(element)
     return resultat
 
-# Apparement si on met juste return self.visit_children(tree) dans une fonction on peut la retirer
+# Sépare les valeurs des types dans un liste du genre [(1, 'ENTIER'), ('yo', 'TEXTE')]
+def decomposeList(l, d = 0):
+    v = []
+    t = []
+    for element in l:
+        if isinstance(element, list) or isinstance(element, tuple) and isinstance(element[0], list):
+            resV, resT = decomposeList(element, d +1)
+            if d%2 == 0: # quand c'est une profondeur impaire, cela signifie que c'est un tuple superflux qui dit que c'est une liste donc il ne faut pas rajouter une profondeur
+                v.append(resV)
+                t.append(resT)
+            else:
+                v.extend(resV)
+                t.extend(resT)
+        elif element[0] != 'l':
+            v.append(element[0])
+            t.append(element[1])
+    return v, t
+
 class MyInterpreter(Interpreter):
     def deco(self, tree, type_res, func):
         tokens = self.visit_children(tree)
@@ -56,62 +60,38 @@ class MyInterpreter(Interpreter):
         tokens = flattenList(tokens)
         var.typeof = tokens[0].value
         var.name = tokens[1].value
+        var.line = tokens[1].line
         if len(tokens) == 3:
+            if isinstance(var.typeof, tuple):
+                var.listType = tokens[2].type[1]
             var.value = tokens[2].value
 
-        #new SPFAlreadyDefined
         try:
-            memo.declare(var, False, tokens[0].line) #new traceback
-        except SPFAlreadyDefined as e:
-                e.line1 = tokens[0].line
-                e.updateError() 
-                print(e.error)
+            memo.declare(var)
+        except SPFException as e:
+                print(e)
                 sys.exit(0)
 
     def assignation(self, tree):
         token = self.visit_children(tree)
         token = flattenList(token)
         
-        #new SPFUnknownVariable
         try:
-            memo.set(token[0].value, token[1].value)
-        except SPFUnknownVariable as e:
-                e.line = token[0].line
-                e.updateError() 
-                print(e.error)
-                sys.exit(0)
-
-    def printList(self, tmp):
-        l = "["
-        for j in range(len(tmp)):
-            #new Le soucis de ' ds la liste pour les booléens A revoir ???
-            if tmp[j][1] == "BOOLEEN" or tmp[j][1] == "ENTIER":
-                l +=  str(tmp[j][0]) 
+            if isinstance(token[1].type , tuple):
+                memo.set(token[0].value, (token[1].value, token[1].type[1]), token[1].type, token[0].line)
             else:
-                l += "'" + str(tmp[j][0]) + "'"
-
-            if(j != len(tmp)-1):
-                l += ", "
-        l += "]"
-        return l
+                memo.set(token[0].value, token[1].value, token[1].type, token[0].line)
+        except SPFException as e:
+                print(e)
+                sys.exit(0)
 
     def afficher(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
+
         res = ""
-
         for i in range(len(tokens)):
-            if tokens[i].type == "TEXTE":
-                res += str(tokens[i].value)
-
-            #new (gestion types liste)
-            elif tokens[i].type == "liste" and len(tokens[i].value) != 0  and isinstance(tokens[i].value[0], tuple):
-                tmp = tokens[i].value
-                l = self.printList(tmp)
-                res += l
-
-            else:
-                res += str(tokens[i].value)
+            res += str(tokens[i].value.__str__().replace("'", ""))
 
             if i != len(tokens) -1:
                 res += " "
@@ -119,54 +99,36 @@ class MyInterpreter(Interpreter):
         print(res)
 
     def ajout(self, tree):
-        #ajouter [1,2] dans [4,2,1, "b"]; Doit-on gérer ?
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
 
-        #new SPFUnknownVariable 
         try:
-            var = memo.get(tokens[1].value)
-        except SPFUnknownVariable as e:
-                e.line = tokens[1].line
-                e.updateError() 
-                print(e.error)
-                sys.exit(0)
+            var = memo.get(tokens[1].value, tokens[1].line)
 
-        try:
-            #new SPFIncompatibleType
-            if var.typeof != "liste":
+            if isinstance(var.typeof, tuple) and var.typeof[0] != "liste":
                 raise SPFIncompatibleType(var.value, var.typeof, "BOOLEEN", tokens[1].line)
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
 
-        res = var.value
+            values = var.value
+            values.append(tokens[0].value)
+            types = var.listType
+            types.append(tokens[0].type)
 
-        #new (gestion types liste)
-        elem = (tokens[0].value, tokens[0].type)
-        res.append(elem)
-
-        #new SPFUnknownVariable
-        try:
-            memo.set(var.name, res)
-        except SPFUnknownVariable as e:
-                e.line = tokens[0].line
-                e.updateError() 
-                print(e.error)
+            memo.set(var.name, (values, types), tokens[0].type, tokens[0].line)
+        except SPFException as e:
+                print(e)
                 sys.exit(0)
 
-        return Token("leslistes", res)
+        return Token(("liste", types), values)
 
     def si(self, tree):
         test = self.visit(tree.children[0])
         test = flattenList(test)[0]
 
         try:
-            #new SPFIncompatibleType
             if test.type != "BOOLEEN":
                 raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
-        except SPFIncompatibleType as e:
-            print(e.error)
+        except SPFException as e:
+            print(e)
             sys.exit(0)
 
         if test.value == "vrai":
@@ -188,10 +150,9 @@ class MyInterpreter(Interpreter):
             test = flattenList(test)[0]
             try:
                 if test.type != "BOOLEEN":
-                    #new SPFIncompatibleType
                     raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
-            except SPFIncompatibleType as e:
-                print(e.error)
+            except SPFException as e:
+                print(e)
                 sys.exit(0)
 
             if test.value == "vrai":
@@ -207,47 +168,33 @@ class MyInterpreter(Interpreter):
         var = back.Variable()
         var.typeof = tree.children[0].value
         var.name = tree.children[1].value
+        var.line = tree.children[1].line
 
-        #SPFAlreadyDefined - inutile ici ?
         memo.declare(var, True)
 
         iter = self.visit(tree.children[2])
         iter = flattenList(iter)[0].value
 
-        #new (gestion types liste)
-        if(isinstance(iter, list) and isinstance(iter[0], tuple)):
-            res = []
-            for i in range(len(iter)):
-                res.append(iter[i][0])
-                
-            iter = res
-
         for t in iter:
-            #new SPFUnknownVariable pas nécessaire ici?
-            memo.set(var.name, t)
+            memo.set(var.name, t, tree.children[1].type, tree.children[1].line)
             for i in tree.children[3:]:
-                
                 self.visit(i)
             tree = deepcopy(tree_copy)
-        #new SPFAlreadyDefined inutile
         memo.delete(var.name)
 
     def exp(self, tree):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
             if token.type == "VARIABLE":
-                #new SPFUnknownVariable
                 try:
-                    var = memo.get(token.value)
-                except SPFUnknownVariable as e:
-                        e.line = token.line
-                        e.updateError() 
-                        print(e.error)
+                    var = memo.get(token.value, token.line)
+                except SPFException as e:
+                        print(e)
                         sys.exit(0)
                 
                 token.type, token.value = var.typeof, var.value
         return self.visit_children(tree)
 
-    def parenthese(self, tree): #todo
+    def parenthese(self, tree):
         return self.visit_children(tree)
 
     def literal(self, tree):
@@ -265,36 +212,31 @@ class MyInterpreter(Interpreter):
     def liste(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-        #new
-        #Liste de tuples [("hey", TEXTE),....] (gestion types liste)
         l = []
         for t in tokens:
             elem = (t.value, t.type)
             l.append(elem)
 
-        return Token("liste", l)
+        l, t = decomposeList(l)
+        return Token(("liste", t), l)
 
     def sequence(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-        return Token("liste", [_ for _ in range(tokens[0].value, tokens[1].value + 1)])
+        step = 1
+        if(tokens[0].value - tokens[1].value > 0):
+            step = -1
+        t = ("liste", ["ENTIER"]+["ENTIER"]*((tokens[1].value - tokens[0].value)*step))
+        return Token(t, [_ for _ in range(tokens[0].value, tokens[1].value + step, step)])
 
     def operation(self, tree):
         return self.visit_children(tree)
 
     def egalite(self, tree):
-        try:
-            return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
 
     def nonegalite(self, tree):
-        try:
-            return self.deco(tree, "BOOLEEN", lambda tokens: value.nonegalite(tokens))
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
+        return self.deco(tree, "BOOLEEN", lambda tokens: value.nonegalite(tokens))
 
     def pluspetit(self, tree):
         return self.deco(tree, "BOOLEEN", lambda tokens: value.pluspetit(tokens))
@@ -325,40 +267,31 @@ class MyInterpreter(Interpreter):
         tokens = flattenList(tokens)
 
         try:
-            if tokens[0].type != tokens[1].type:
-                #new SPFIncompatibleType
+            if tokens[0].type != tokens[1].type or not (isinstance(tokens[0].type, tuple) and isinstance(tokens[1].type, tuple)):
                 raise SPFIncompatibleType(tokens[0].value, tokens[0].type, tokens[1].type, tokens[0].line)
 
-            if tokens[0].type == "liste":
+            if isinstance(tokens[0].type, tuple):
                 res = tokens[0].value
                 res.extend(tokens[1].value)
-                return Token("liste", res)
+                t = tokens[0].type[1]
+                t.extend(tokens[1].type[1])
+                return Token(("liste", t), res)
+            elif tokens[0].type == "TEXTE":
+                return Token("TEXTE", tokens[0].value + tokens[1].value)
             else:
                 return Token(tokens[0].type, value.calcul(tokens, lambda n1, n2: n1 + n2))
-        except SPFIncompatibleType as e:
-            print(e.error)
+        except SPFException as e:
+            print(e)
             sys.exit(0)
 
     def soustraction(self, tree):
-        try:
-            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
 
     def multiplication(self, tree):
-        try:
-            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 * n2))
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 * n2))
 
     def division(self, tree):
-        try:
-            return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 / n2))
-        except SPFIncompatibleType as e:
-            print(e.error)
-            sys.exit(0)
+        return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 / n2))
 
     def indice(self, tree):
         tokens = self.visit_children(tree)
@@ -366,31 +299,20 @@ class MyInterpreter(Interpreter):
 
         try: 
             if tokens[1].type == "ENTIER":
-                if tokens[0].type == "TEXTE" or tokens[0].type == "liste":
+                if tokens[0].type == "TEXTE" or isinstance(tokens[0].type, tuple):
                     if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
-                        #new SPFIndexError
-                        value = tokens[0].value
-                        if tokens[0].type == "liste":
-                            value = self.printList(tokens[0].value)
-
-                        raise SPFIndexError(value, tokens[0].line, tokens[1].value)                    
+                        raise SPFIndexError(tokens[0].line, tokens[1].value)                    
                     else:
-                        #new (gestion types liste)
-                        if(tokens[0].type == "liste"):
-                            return Token(tokens[0].value[tokens[1].value-1][1], tokens[0].value[tokens[1].value-1][0])
+                        if tokens[0].type[0] == "liste" :
+                            return Token(tokens[0].type[1][tokens[1].value-1], tokens[0].value[tokens[1].value-1])
 
                         return Token("TEXTE", tokens[0].value[tokens[1].value-1])
                 else:
-                    #new SPFIncompatibleType
                     raise SPFIncompatibleType(tokens[0].value, tokens[0].type, "TEXTE ou liste", tokens[0].line)
             else:
-                #new SPFIncompatibleType
                 raise SPFIncompatibleType(tokens[1].value, tokens[1].type, "ENTIER", tokens[1].line)
-        except SPFIndexError as e:
-            print(e.error)
-            sys.exit(0)
-        except SPFIncompatibleType as e:
-            print(e.error)
+        except SPFException as e:
+            print(e)
             sys.exit(0)
 
     def taille(self, tree):
@@ -404,9 +326,10 @@ if __name__ == '__main__':
     parser_argument.add_argument("file", help="Le fichier a exécuter", type=str)
     parser_argument.add_argument("-m", "--memory", action="store_true", help="Affiche la mémoire du programme à l'issue de son exécution")
     parser_argument.add_argument("-d", "--debug", action="store_true", help="Affiche les variables lors de leur déclaration, utilisation ou modification")
+    parser_argument.add_argument("-t", "--tableau", action="store_true", help="Affiche un tableau pour illustrer la mémoire")
     args = parser_argument.parse_args()
 
-    memo = back.Memory(args.debug)
+    memo = back.Memory(args.debug, args.tableau)
     
     value = back.Value()
 
@@ -417,11 +340,4 @@ if __name__ == '__main__':
     if args.memory:
         print("\n--- Mémoire final ---\n", file=sys.stderr)
         print(memo, file=sys.stderr)
-
-    """
-    try:
-        raise error.SPFSyntaxError("l'erreur")
-    except error.SPFSyntaxError as e:
-        print(e)
-    """
 

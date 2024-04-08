@@ -1,94 +1,13 @@
-### OK
-#texte coucou = "coucou";
-#entier n = -1;
-#liste l = [1, "hey", vrai];
-#booléen test = vrai;
-#liste l1 = [];
-#liste l2 = [2: 5];
-#texte lettre = "salut"[1];
-#entier n2 = [1, 3, 4][3];
-#entier n3 = [1:10][6];
-#entier t = taille "arch";
-#entier t2 = taille [1:20];
-#afficher 1, "coucou", 2 * 4;
-#afficher ajouter " btw" dans "I use Arch";
-#afficher ajouter 1 dans [3, 2];
-#liste l2 = [2: 5]; l2 = [1];
-#booléen b1 = vrai; booléen b2 = faux ;booléen b3 = b1 et b2;
-#entier n1 = 10; afficher n1 / 2;
-#texte c = "salut" ; afficher c;
-#liste l3 = [1, 2]; ajouter [4] dans l3; ajouter "texte" dans l3; afficher l3;
-#booléen drapeau = vrai; si drapeau alors { afficher "gg"; afficher "wp"; }
-#si vrai ou faux alors { afficher "gg"; afficher "wp"; }
-#si faux alors { texte res = "non" ; afficher res;} sinon { texte res = "oui" ; afficher res;}
-#si vrai alors { si vrai alors { afficher "1"; } sinon { afficher "2"; } } sinon { afficher "3"; }
-#entier i = 0; tant que i < 10 faire { afficher i; i = i + 1; }
-#texte mot = "bonjour"; entier i = 1; tant que i <= taille mot faire { afficher mot[i]; i = i+1; }
-#pour chaque texte lettre dans "neovim" faire { texte prefix = "je demande un '"; texte postfix = "'"; afficher prefix, lettre, postfix; } afficher "NEOVIM!";
-#pour chaque entier n dans [1, 2, [3, 4]] faire { afficher n; }
-#pour chaque entier i dans [1:10] faire { pour chaque entier j dans [1:10] faire { afficher i, j;}}
-#afficher "bon" + "jour";
-#afficher [1] + [2, 3] + ["yes"];
-#entier x = 10; pour chaque entier x dans [1:5] faire { afficher x; } afficher x;
-
-### Problème
-#entier n = 1 + 10 - 8;
-#booléen bool = non faux et vrai;
-
-###  exemple projet
-## Recherche d’un maximum
-liste nombres = [1, 8, 3, 6];
-entier maximum;
-maximum = nombres[1];
-pour chaque entier nombre dans nombres faire {
-si nombre > maximum alors {
-maximum = nombre;
-}
-}
-afficher "Le maximum dans", nombres, "est", maximum;
-
-## Factorielle d’un nombre
-entier nombre = 5;
-entier factorielle;
-factorielle = 1;
-tant que nombre > 0 faire {
-factorielle = factorielle * nombre;
-nombre = nombre - 1;
-}
-afficher "La factorielle vaut", factorielle;
-
-## Monotonicité d’une liste
-liste nombres2 = [3, 3, 6, 7, 8]; #SPFUnknownVariable : la variable  'nombres' à la ligne 61 a déjà été déclarée à la ligne 40 !
-
-booléen monotone = vrai;
-pour chaque entier position dans [1:taille nombres2 - 1] faire {
-si nombres2[position] > nombres2[position + 1] alors {
-monotone = faux;
-}
-}
-si monotone alors {
-afficher "La liste", nombres2, "est monotone";
-} sinon {
-afficher "La liste", nombres2, "n'est pas monotone";
-}
-
-## Identifier les mots d’un texte
-texte phrase = "Bonjour à tout le monde";
-texte mot = "";
-liste mots = [];
-pour chaque texte caractère dans phrase faire {
-si caractère vaut " " alors {
-si taille mot > 0 alors {
-ajouter mot dans mots;
-mot = "";
-}
-} sinon {
-mot = mot + caractère;
-}
-}
-# Potentiel dernier mot
-si taille mot > 0 alors {
-ajouter mot dans mots;
-}
-afficher mots;
-
+#booléen x = vrai;
+#afficher x;
+#
+#pour chaque entier x dans [0:1] faire {
+    #pour chaque entier x dans [3:3+x] faire {
+        #afficher x;
+    #}
+#
+    #afficher x;
+#}
+#
+#afficher x;
+# res : vrai, 3, 0, 3, 4, 1 et vrai
