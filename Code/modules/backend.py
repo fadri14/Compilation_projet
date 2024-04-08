@@ -9,7 +9,7 @@ class Memory(): # Stocke les variables
         self.flag_debug = flag_debug
         self.flag_tableau = flag_tableau
         self.dico = {}
-        self.tmp = {}
+        self.stack_temporaire = []
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
     # on force quand on crée la variable d'une boucle
@@ -22,11 +22,10 @@ class Memory(): # Stocke les variables
             pass #erreur
 
         if self.flag_debug:
-            print("(", var.line, ")", "déclaration:".ljust(15), var, file=sys.stderr)
+            print("(", str(var.line).ljust(2), ")", "déclaration:".ljust(15), var, file=sys.stderr)
 
         if force and var.name in self.dico.keys():
-            t = self.dico.get(var.name)
-            self.tmp[t.name] = t
+            self.stack_temporaire.append(self.dico.get(var.name))
             del self.dico[var.name]
 
         global max
@@ -45,7 +44,7 @@ class Memory(): # Stocke les variables
             raise SPFUninitializedVariable(name, line, var.line)
 
         if self.flag_debug:
-            print("(", line, ")", "accès:".ljust(15), var, file=sys.stderr)
+            print("(", str(line).ljust(2), ")", "accès:".ljust(15), var, file=sys.stderr)
 
         if var.typeof == "booléen":
             var.typeof = "BOOLEEN"
@@ -73,14 +72,12 @@ class Memory(): # Stocke les variables
             var.value = value
 
         if self.flag_debug:
-            print("(", line, ")", "modification:".ljust(15), self.dico.get(name), file=sys.stderr)
+            print("(", str(line).ljust(2), ")", "modification:".ljust(15), self.dico.get(name), file=sys.stderr)
 
     def delete(self, name):
         del self.dico[name]
-        if name in self.tmp.keys(): # en théorie dans notre cas toujours vrai
-            d = self.tmp.get(name)
-            self.dico[d.name] = d
-            del self.tmp[name]
+        var = self.stack_temporaire.pop()
+        self.dico[var.name] = var
 
     def __str__(self):
         res = ""
@@ -110,7 +107,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != type_tokens:
-                        raise SPFIncompatibleType(t.value, t.type, type_tokens, t.line)
+                    raise SPFIncompatibleType(t.value, [t.type, type_tokens], t.line)
 
             if func(tokens):
                 return "vrai"
@@ -122,7 +119,7 @@ class Value(): # Effectue les calculs
     def egalite(self, tokens):
         try:
             if tokens[0].type != tokens[1].type:
-                raise SPFIncompatibleType(tokens[0].value, tokens[0].type, tokens[1].type, tokens[0].line)
+                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[0].line)
 
             if tokens[0].value == tokens[1].value:
                 return "vrai"
@@ -160,7 +157,7 @@ class Value(): # Effectue les calculs
     def negation(self, token):
         try:
             if token[0].type != "ENTIER":
-                raise SPFIncompatibleType(token[0].value, token[0].type, "ENTIER", token[0].line)
+                raise SPFIncompatibleType(token[0].value, [token[0].type, "entier"], token[0].line)
 
             return - token[0].value
         except SPFException as e:
@@ -172,7 +169,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != "ENTIER":
-                    raise SPFIncompatibleType(t.value, t.type, "ENTIER", t.line)
+                    raise SPFIncompatibleType(t.value, [t.type, "entier"], t.line)
 
             return operation(tokens[0].value, tokens[1].value)
         except SPFException as e:

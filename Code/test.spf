@@ -1,13 +1,2 @@
-#booléen x = vrai;
-#afficher x;
-#
-#pour chaque entier x dans [0:1] faire {
-    #pour chaque entier x dans [3:3+x] faire {
-        #afficher x;
-    #}
-#
-    #afficher x;
-#}
-#
-#afficher x;
-# res : vrai, 3, 0, 3, 4, 1 et vrai
+afficher [2, [1, 3]];
+#afficher [2, [1, [3]]];

@@ -7,12 +7,12 @@ from copy import deepcopy
 from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType
 
 #todo:
-# changer toutes types dans les messages d'erreurs pour les mettres en minuscule
 # régler l'exemple de boucle pour chaque donné dans le pdf
+# chercher toutes les erreurs de types incompatibles
 # réessayer plusieurs composanstes
 # faire les priorités des opérations
-# chercher toutes les erreurs de types incompatibles
 # faire la gestion d'erreur pour la syntaxe
+# utiliser aussi la colonnes pour localiser l'erreur
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -106,7 +106,7 @@ class MyInterpreter(Interpreter):
             var = memo.get(tokens[1].value, tokens[1].line)
 
             if isinstance(var.typeof, tuple) and var.typeof[0] != "liste":
-                raise SPFIncompatibleType(var.value, var.typeof, "BOOLEEN", tokens[1].line)
+                raise SPFIncompatibleType(var.value, [var.typeof, "booléen"], tokens[1].line)
 
             values = var.value
             values.append(tokens[0].value)
@@ -126,7 +126,7 @@ class MyInterpreter(Interpreter):
 
         try:
             if test.type != "BOOLEEN":
-                raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
+                raise SPFIncompatibleType(test.value, [test.type, "booléen"], test.line)
         except SPFException as e:
             print(e)
             sys.exit(0)
@@ -150,7 +150,7 @@ class MyInterpreter(Interpreter):
             test = flattenList(test)[0]
             try:
                 if test.type != "BOOLEEN":
-                    raise SPFIncompatibleType(test.value, test.type, "BOOLEEN", test.line)
+                    raise SPFIncompatibleType(test.value, [test.type, "booléen"], test.line)
             except SPFException as e:
                 print(e)
                 sys.exit(0)
@@ -170,10 +170,10 @@ class MyInterpreter(Interpreter):
         var.name = tree.children[1].value
         var.line = tree.children[1].line
 
-        memo.declare(var, True)
-
         iter = self.visit(tree.children[2])
         iter = flattenList(iter)[0].value
+
+        memo.declare(var, True)
 
         for t in iter:
             memo.set(var.name, t, tree.children[1].type, tree.children[1].line)
@@ -213,10 +213,20 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
         l = []
+        print("avant ",tokens)
+        for i in range(len(tokens) -1, 0, -1):
+            if isinstance(tokens[i].type, tuple):
+                for j in range(len(tokens[i].value)):
+                    tokens.append(Token(tokens[i].type[1][j], tokens[i].value[j])) # attention à l'ordre
+                tokens.pop(i)
+        print("après ", tokens)
+
         for t in tokens:
             elem = (t.value, t.type)
             l.append(elem)
 
+        print(l)
+        print()
         l, t = decomposeList(l)
         return Token(("liste", t), l)
 
@@ -267,8 +277,8 @@ class MyInterpreter(Interpreter):
         tokens = flattenList(tokens)
 
         try:
-            if tokens[0].type != tokens[1].type or not (isinstance(tokens[0].type, tuple) and isinstance(tokens[1].type, tuple)):
-                raise SPFIncompatibleType(tokens[0].value, tokens[0].type, tokens[1].type, tokens[0].line)
+            if not (tokens[0].type != tokens[1].type or not (isinstance(tokens[0].type, tuple) and isinstance(tokens[1].type, tuple))):
+                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[0].line)
 
             if isinstance(tokens[0].type, tuple):
                 res = tokens[0].value
@@ -308,9 +318,9 @@ class MyInterpreter(Interpreter):
 
                         return Token("TEXTE", tokens[0].value[tokens[1].value-1])
                 else:
-                    raise SPFIncompatibleType(tokens[0].value, tokens[0].type, "TEXTE ou liste", tokens[0].line)
+                    raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, "texte ou liste"], tokens[0].line)
             else:
-                raise SPFIncompatibleType(tokens[1].value, tokens[1].type, "ENTIER", tokens[1].line)
+                raise SPFIncompatibleType(tokens[1].value, [tokens[1].type, "entier"], tokens[1].line)
         except SPFException as e:
             print(e)
             sys.exit(0)

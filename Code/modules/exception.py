@@ -11,7 +11,7 @@ class SPFSyntaxError(SPFException):
 
 class SPFUninitializedVariable(SPFException):
     def __init__(self, variable, line_error, line_declare):
-        super().__init__(f"SPFUninitializedVariable : la variable '{variable}' est utilisé à la ligne {line_error} mais n'a pas été initialisée ! Voir ligne {line_declare}.")
+        super().__init__(f"SPFUninitializedVariable : la variable '{variable}' est utilisé à la ligne {line_error} mais n'a pas été initialisée ! Elle a été déclarée à la ligne {line_declare}.")
 
 class SPFUnknownVariable(SPFException):
     def __init__(self, variable, line_error):
@@ -21,10 +21,18 @@ class SPFAlreadyDefined(SPFException):
     def __init__(self, variable, line_error, line_declare):
         super().__init__(f"SPFAlreadyDefined : la variable '{variable}' à la ligne {line_error} a déjà été déclarée à la ligne {line_declare} !")
 
-#todo revoir l'explitacion de l'erreur
+#todo revoir l'explitacion de l'erreur, ca peut-être autre chose qu'une variable
 class SPFIncompatibleType(SPFException):
-    def __init__(self, variable, type1, type2, line_error):
-        super().__init__(f"SPFIncompatibleType : la variable '{variable}' à la ligne {line_error} possède un type {type1}, ce qui est incompatible avec le type {type2} !")
+    def __init__(self, variable, types, line_error):
+        for i in range(len(types)):
+            if types[i] == "BOOLEEN":
+                types[i] = "booléen"
+            elif types[i] == "ENTIER":
+                types[i] = "entier"
+            elif types[i] == "TEXTE":
+                types[i] = "texte"
+
+        super().__init__(f"SPFIncompatibleType : la variable '{variable}' à la ligne {line_error} possède un type {types[0]}, ce qui est incompatible avec le type {types[0]} !")
 
 #todo revoir l'explitacion de l'erreur ( indice entre 1 et n)
 class SPFIndexError(SPFException):
