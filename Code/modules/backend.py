@@ -13,12 +13,16 @@ class Memory(): # Stocke les variables
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
     # on force quand on crée la variable d'une boucle
-    def declare(self, var, force = False):
+    def declare(self, var, column, typeOfValue = None, force = False):
+        if typeOfValue != None:
+            if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
+                raise SPFIncompatibleType(var.name, [typeOfValue, var.typeof], var.line, column)
+
         if not force and var.name in self.dico.keys():
             var2 = self.dico.get(var.name)
-            raise SPFAlreadyDefined(var.name, var.line, var2.line)
+            raise SPFAlreadyDefined(var.name, var.line, var2.line, column)
 
-        if var.name in self.keyword:
+        if var.name in self.keyword: # tester ce qui se passe
             pass #erreur
 
         if self.flag_debug:
@@ -34,14 +38,14 @@ class Memory(): # Stocke les variables
 
         self.dico[var.name] = var
 
-    def get(self, name, line):
+    def get(self, name, line, column):
         if not name in self.dico.keys():
-            raise SPFUnknownVariable(name, line)
+            raise SPFUnknownVariable(name, line, column)
 
         var = deepcopy(self.dico.get(name))
 
         if var.value == None:
-            raise SPFUninitializedVariable(name, line, var.line)
+            raise SPFUninitializedVariable(name, line, var.line, column)
 
         if self.flag_debug:
             print("(", str(line).ljust(2), ")", "accès:".ljust(15), var, file=sys.stderr)
@@ -57,13 +61,14 @@ class Memory(): # Stocke les variables
 
         return var
 
-    def set(self, name, value, typeof, line):
+    def set(self, name, value, typeOfValue, line, column):
         if not name in self.dico.keys():
-            raise SPFUnknownVariable(name, line)
+            raise SPFUnknownVariable(name, line, column)
 
         var = self.dico.get(name)
-        if var.typeof != typeof:
-            pass #erreur
+
+        if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
+            raise SPFIncompatibleType(var.name, [typeOfValue, var.typeof], line, column)
 
         if var.typeof == 'liste':
             var.value = value[0]
@@ -76,8 +81,9 @@ class Memory(): # Stocke les variables
 
     def delete(self, name):
         del self.dico[name]
-        var = self.stack_temporaire.pop()
-        self.dico[var.name] = var
+        if len(self.stack_temporaire) > 0:
+            var = self.stack_temporaire.pop()
+            self.dico[var.name] = var
 
     def __str__(self):
         res = ""
@@ -107,7 +113,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != type_tokens:
-                    raise SPFIncompatibleType(t.value, [t.type, type_tokens], t.line)
+                    raise SPFIncompatibleType(t.value, [t.type, type_tokens], t.line, t.column)
 
             if func(tokens):
                 return "vrai"
@@ -119,7 +125,7 @@ class Value(): # Effectue les calculs
     def egalite(self, tokens):
         try:
             if tokens[0].type != tokens[1].type:
-                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[0].line)
+                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[0].line, tokens[0].column)
 
             if tokens[0].value == tokens[1].value:
                 return "vrai"
@@ -157,7 +163,7 @@ class Value(): # Effectue les calculs
     def negation(self, token):
         try:
             if token[0].type != "ENTIER":
-                raise SPFIncompatibleType(token[0].value, [token[0].type, "entier"], token[0].line)
+                raise SPFIncompatibleType(token[0].value, [token[0].type, "entier"], token[0].line, token[0].column)
 
             return - token[0].value
         except SPFException as e:
@@ -169,7 +175,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != "ENTIER":
-                    raise SPFIncompatibleType(t.value, [t.type, "entier"], t.line)
+                    raise SPFIncompatibleType(t.value, [t.type, "entier"], t.line, t.column)
 
             return operation(tokens[0].value, tokens[1].value)
         except SPFException as e:
