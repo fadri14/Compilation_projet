@@ -7,7 +7,6 @@ from copy import deepcopy
 from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
 
 #todo:
-# régler le problème de création de liste
 # réessayer plusieurs composanstes
 # faire les priorités des opérations
 # faire la gestion d'erreur pour la syntaxe
@@ -217,25 +216,31 @@ class MyInterpreter(Interpreter):
     def leslistes(self, tree):
         return self.visit_children(tree)
 
+    def deleteToken(self, l):
+        resultat = []
+        for element in l:
+            if isinstance(element, list):
+                resultat.append(self.deleteToken(element))
+            else:
+                if isinstance(element.value, list):
+                    resultat.append([[(element.value[0], element.type[0])]])
+                else:
+                    resultat.append((element.value, element.type))
+        return resultat
+
     def liste(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
-        l = []
-        print("avant ",tokens)
+
         for i in range(len(tokens) -1, 0, -1):
             if isinstance(tokens[i].type, tuple):
+                tmp = []
                 for j in range(len(tokens[i].value)):
-                    tokens.append(Token(tokens[i].type[1][j], tokens[i].value[j])) # attention à l'ordre
+                    tmp.append(Token(tokens[i].type[1][j], tokens[i].value[j]))
                 tokens.pop(i)
-        print("après ", tokens)
+                tokens.insert(i, tmp)
 
-        for t in tokens:
-            elem = (t.value, t.type)
-            l.append(elem)
-
-        print(l)
-        print()
-        l, t = decomposeList(l)
+        l, t = decomposeList(self.deleteToken(tokens))
         return Token(("liste", t), l)
 
     def sequence(self, tree):

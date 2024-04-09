@@ -1,4 +1,3 @@
-afficher [2, [1, 3]];
-#afficher [2, [1, [3]]];
+afficher [2, [1, [3]]];
 
 
