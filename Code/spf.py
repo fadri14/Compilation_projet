@@ -7,7 +7,6 @@ from copy import deepcopy
 from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
 
 #todo:
-# améliorer le code erreur
 # régler le problème de création de liste
 # réessayer plusieurs composanstes
 # faire les priorités des opérations
@@ -108,7 +107,7 @@ class MyInterpreter(Interpreter):
             var = memo.get(tokens[1].value, tokens[1].line, tokens[1].column)
 
             if var.typeof != "liste" or (isinstance(var.typeof, tuple) and var.typeof[0] != "liste"):
-                raise SPFIncompatibleType(var.value, [var.typeof, "booléen"], tokens[1].line, tokens[1].column)
+                raise SPFIncompatibleType((var.value, tokens[1].line, tokens[1].column), [var.typeof, "booléen"])
 
             values = var.value
             values.append(tokens[0].value)
@@ -128,7 +127,7 @@ class MyInterpreter(Interpreter):
 
         try:
             if test.type != "BOOLEEN":
-                raise SPFIncompatibleType(test.value, [test.type, "booléen"], test.line, test.column)
+                raise SPFIncompatibleType((test.value, test.line, test.column), [test.type, "booléen"])
         except SPFException as e:
             print(e)
             sys.exit(0)
@@ -152,7 +151,7 @@ class MyInterpreter(Interpreter):
             test = flattenList(test)[0]
             try:
                 if test.type != "BOOLEEN":
-                    raise SPFIncompatibleType(test.value, [test.type, "booléen"], test.line, test.column)
+                    raise SPFIncompatibleType((test.value, test.line, test.column), [test.type, "booléen"])
             except SPFException as e:
                 print(e)
                 sys.exit(0)
@@ -287,7 +286,7 @@ class MyInterpreter(Interpreter):
 
         try:
             if tokens[0].type != tokens[1].type or (not isinstance(tokens[0].type, tuple) or not isinstance(tokens[1].type, tuple)):
-                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[1].line, tokens[1].column)
+                raise SPFIncompatibleType((tokens[0].value, tokens[1].line, tokens[1].column), [tokens[0].type, tokens[1].type])
 
             if isinstance(tokens[0].type, tuple):
                 res = tokens[0].value
@@ -320,16 +319,16 @@ class MyInterpreter(Interpreter):
             if tokens[1].type == "ENTIER":
                 if tokens[0].type == "TEXTE" or isinstance(tokens[0].type, tuple):
                     if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value: # provoque une erreur de syntaxe si l'entier est négatif
-                        raise SPFIndexError(tokens[1].value, tokens[1].line, tokens[1].column)
+                        raise SPFIndexError((tokens[1].value, tokens[1].line, tokens[1].column))
                     else:
                         if tokens[0].type[0] == "liste" :
                             return Token(tokens[0].type[1][tokens[1].value-1], tokens[0].value[tokens[1].value-1])
 
                         return Token("TEXTE", tokens[0].value[tokens[1].value-1])
                 else:
-                    raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, "texte ou liste"], tokens[0].line, tokens[0].column)
+                    raise SPFIncompatibleType((tokens[0].value, tokens[0].line, tokens[0].column), [tokens[0].type, "texte ou liste"])
             else:
-                raise SPFIncompatibleType(tokens[1].value, [tokens[1].type, "entier"], tokens[1].line, tokens[1].column)
+                raise SPFIncompatibleType((tokens[1].value, tokens[1].line, tokens[1].column), [tokens[1].type, "entier"])
         except SPFException as e:
             print(e)
             sys.exit(0)

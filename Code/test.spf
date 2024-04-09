@@ -2,4 +2,4 @@
 #afficher [2, [1, [3]]];
 
 
-pour chaque entier x dans [1, 2, "3"] faire { afficher x;}
+afficher bcabla;

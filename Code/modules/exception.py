@@ -5,8 +5,12 @@ def setFile(f):
     file = f
 
 class SPFException(Exception):
-    def __init__(self, error):
-        self.error = error
+    def __init__(self, error, info): # info = (variable, line_error, column)
+        global file
+        line_code = lc.getline(file, info[1]) 
+        surligne = " " * (info[2]-1) + "^" + "~" * (len(info[0])-1)
+        show = f"{line_code[:-1]}\n{surligne}\n\n"
+        self.error = show + error
 
     def __str__(self):
         return self.error
@@ -16,32 +20,19 @@ class SPFSyntaxError(SPFException):
         self.error = error
 
 class SPFUninitializedVariable(SPFException):
-    def __init__(self, variable, line_error, line_declare, column):
-        global file
-        line_code = lc.getline(file, line_error) 
-        surligne = " " * (column-1) + "^" + "~" * (len(variable)-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
-        super().__init__(f"{show}SPFUninitializedVariable : la variable '{variable}' est utilisé à la ligne {line_error} mais n'a pas été initialisée ! Elle a été déclarée à la ligne {line_declare}.")
+    def __init__(self, info, line_declare):
+        super().__init__(f"SPFUninitializedVariable : la variable '{info[0]}' est utilisé à la ligne {info[1]} mais n'a pas été initialisée ! Elle a été déclarée à la ligne {line_declare}.", info)
 
 class SPFUnknownVariable(SPFException):
-    def __init__(self, variable, line_error, column):
-        global file
-        line_code = lc.getline(file, line_error) 
-        surligne = " " * (column-1) + "^" + "~" * (len(variable)-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
-        super().__init__(f"{show}SPFUnknownVariable : la variable '{variable}' à la ligne {line_error} n'est pas déclarée !")
+    def __init__(self, info):
+        super().__init__(f"SPFUnknownVariable : la variable '{info[0]}' à la ligne {info[1]} n'est pas déclarée !", info)
 
 class SPFAlreadyDefined(SPFException):
-    def __init__(self, variable, line_error, line_declare, column):
-        global file
-        line_code = lc.getline(file, line_error) 
-        surligne = " " * (column-1) + "^" + "~" * (len(variable)-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
-        super().__init__(f"{show}SPFAlreadyDefined : la variable '{variable}' à la ligne {line_error} a déjà été déclarée à la ligne {line_declare} !")
+    def __init__(self, info, line_declare):
+        super().__init__(f"SPFAlreadyDefined : la variable '{info[0]}' à la ligne {info[1]} a déjà été déclarée à la ligne {line_declare} !", info)
 
-#todo revoir l'explitacion de l'erreur, ca peut-être autre chose qu'une variable
 class SPFIncompatibleType(SPFException):
-    def __init__(self, variable, types, line_error, column):
+    def __init__(self, info, types):
         for i in range(len(types)):
             if types[i] == "BOOLEEN":
                 types[i] = "booléen"
@@ -50,18 +41,9 @@ class SPFIncompatibleType(SPFException):
             elif types[i] == "TEXTE":
                 types[i] = "texte"
 
-        global file
-        line_code = lc.getline(file, line_error) 
-        surligne = " " * (column-1) + "^" + "~" * (len(variable)-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
-        super().__init__(f"{show}SPFIncompatibleType : le terme '{variable}' à la ligne {line_error} est de type {types[1]}, ce qui est incompatible avec le type {types[0]} !")
+        super().__init__(f"SPFIncompatibleType : le terme '{info[0]}' à la ligne {info[1]} est de type {types[1]}, ce qui est incompatible avec le type {types[0]} !", info)
 
-#todo revoir l'explitacion de l'erreur ( indice entre 1 et n)
 class SPFIndexError(SPFException):
-    def __init__(self, position, line_error, column):
-        global file
-        line_code = lc.getline(file, line_error) 
-        surligne = " " * (column-1) + "^" + "~" * (len(str(position))-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
-        super().__init__(f"{show}SPFIndexError : La position {position} que vous utilisez à la ligne {line_error} n'existe pas !")
+    def __init__(self, info):
+        super().__init__(f"SPFIndexError : La position {info[0]} que vous utilisez à la ligne {info[1]} est invalide, il doit être compris entre 1 et la taille du terme !", info)
 

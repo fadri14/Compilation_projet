@@ -16,11 +16,11 @@ class Memory(): # Stocke les variables
     def declare(self, var, column, typeOfValue = None, force = False):
         if typeOfValue != None:
             if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
-                raise SPFIncompatibleType(var.name, [typeOfValue, var.typeof], var.line, column)
+                raise SPFIncompatibleType((var.name, var.line, column), [typeOfValue, var.typeof])
 
         if not force and var.name in self.dico.keys():
             var2 = self.dico.get(var.name)
-            raise SPFAlreadyDefined(var.name, var.line, var2.line, column)
+            raise SPFAlreadyDefined((var.name, var.line, column), var2.line)
 
         if var.name in self.keyword: # tester ce qui se passe
             pass #erreur
@@ -40,12 +40,12 @@ class Memory(): # Stocke les variables
 
     def get(self, name, line, column):
         if not name in self.dico.keys():
-            raise SPFUnknownVariable(name, line, column)
+            raise SPFUnknownVariable((name, line, column))
 
         var = deepcopy(self.dico.get(name))
 
         if var.value == None:
-            raise SPFUninitializedVariable(name, line, var.line, column)
+            raise SPFUninitializedVariable((name, line, column), var.line)
 
         if self.flag_debug:
             print("(", str(line).ljust(2), ")", "accès:".ljust(15), var, file=sys.stderr)
@@ -63,12 +63,12 @@ class Memory(): # Stocke les variables
 
     def set(self, name, value, typeOfValue, line, column):
         if not name in self.dico.keys():
-            raise SPFUnknownVariable(name, line, column)
+            raise SPFUnknownVariable((name, line, column))
 
         var = self.dico.get(name)
 
         if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
-            raise SPFIncompatibleType(var.name, [typeOfValue, var.typeof], line, column)
+            raise SPFIncompatibleType((var.name, line, column), [typeOfValue, var.typeof])
 
         if var.typeof == 'liste':
             var.value = value[0]
@@ -113,7 +113,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != type_tokens:
-                    raise SPFIncompatibleType(t.value, [t.type, type_tokens], t.line, t.column)
+                    raise SPFIncompatibleType((t.value, t.line, t.column), [t.type, type_tokens])
 
             if func(tokens):
                 return "vrai"
@@ -125,7 +125,7 @@ class Value(): # Effectue les calculs
     def egalite(self, tokens):
         try:
             if tokens[0].type != tokens[1].type:
-                raise SPFIncompatibleType(tokens[0].value, [tokens[0].type, tokens[1].type], tokens[0].line, tokens[0].column)
+                raise SPFIncompatibleType((tokens[0].value, tokens[0].line, tokens[0].column), [tokens[0].type, tokens[1].type])
 
             if tokens[0].value == tokens[1].value:
                 return "vrai"
@@ -163,7 +163,7 @@ class Value(): # Effectue les calculs
     def negation(self, token):
         try:
             if token[0].type != "ENTIER":
-                raise SPFIncompatibleType(token[0].value, [token[0].type, "entier"], token[0].line, token[0].column)
+                raise SPFIncompatibleType((token[0].value, token[0].line, token[0].column), [token[0].type, "entier"])
 
             return - token[0].value
         except SPFException as e:
@@ -175,7 +175,7 @@ class Value(): # Effectue les calculs
         try:
             for t in tokens:
                 if t.type != "ENTIER":
-                    raise SPFIncompatibleType(t.value, [t.type, "entier"], t.line, t.column)
+                    raise SPFIncompatibleType((t.value, t.line, t.column), [t.type, "entier"])
 
             return operation(tokens[0].value, tokens[1].value)
         except SPFException as e:
