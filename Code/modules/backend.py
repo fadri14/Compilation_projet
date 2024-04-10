@@ -2,13 +2,14 @@ import sys
 from copy import deepcopy
 from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIncompatibleType, SPFUninitializedVariable
 
+# Simple variable pour avoir un affichage en tableau
 max = 0
 
 class Memory(): # Stocke les variables
     def __init__(self, flag_debug, flag_tableau):
         self.flag_debug = flag_debug
         self.flag_tableau = flag_tableau
-        self.dico = {}
+        self.dico = {} # Dictionnaire qui contient toutes les variables du programme interprétées
         self.stack_temporaire = []
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
@@ -27,12 +28,14 @@ class Memory(): # Stocke les variables
             for k in self.keyword:
                 keyword += ("  " + k + ",\n")
             keyword = "\n" + keyword
+            # On gère ce type d'erreur ici et non dans la grammaire pour avoir un message plus adéquat
             raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mot clés suivants :{keyword}", (var.name, var.line, column))
 
         if self.flag_debug:
             print("(", str(var.line).ljust(2), ")", "déclaration:".ljust(15), var, file=sys.stderr)
 
         if force and var.name in self.dico.keys():
+            # On déplace temporairement la variable déjà crée dans une stack durant le temps d'exécution de la boucle
             self.stack_temporaire.append(self.dico.get(var.name))
             del self.dico[var.name]
 
@@ -46,6 +49,7 @@ class Memory(): # Stocke les variables
         if not name in self.dico.keys():
             raise SPFUnknownVariable((name, line, column))
 
+        # On retourne une copie
         var = deepcopy(self.dico.get(name))
 
         if var.value == None:
@@ -74,6 +78,7 @@ class Memory(): # Stocke les variables
         if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
             raise SPFIncompatibleType((var.name, line, column), [typeOfValue, var.typeof])
 
+        # Si on est sur une liste, typeOfValue est un tuple contenant ("liste", […type…])
         if var.typeof == 'liste':
             var.value = value
             var.listType = typeOfValue[1]
@@ -83,12 +88,14 @@ class Memory(): # Stocke les variables
         if self.flag_debug:
             print("(", str(line).ljust(2), ")", "modification:".ljust(15), self.dico.get(name), file=sys.stderr)
 
+    # Appeler quand on quitte une boucle "pour chaque"
     def delete(self, name):
         del self.dico[name]
-        if len(self.stack_temporaire) > 0:
+        if len(self.stack_temporaire) > 0 and self.stack_temporaire[-1].name == name:
             var = self.stack_temporaire.pop()
             self.dico[var.name] = var
 
+    # Appeler quand on doit afficher la mémoire finale
     def __str__(self):
         res = ""
         for var in self.dico.values():
@@ -113,6 +120,7 @@ class Variable(): # Représente une variable
         return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {res}"
 
 class Value(): # Effectue les calculs
+    # Décorateur utilisé par les opérations logiques pour limiter le nombre de ligne
     def deco(self, tokens, type_tokens, func):
         try:
             for t in tokens:
@@ -174,7 +182,7 @@ class Value(): # Effectue les calculs
             print(e.error)
             sys.exit(0)
 
-    # operation est une fonction lambda effectuant une opération entre deux nombres
+    # operation est une fonction lambda effectuant une opération entre deux nombres, voir spf.py
     def calcul(self, tokens, operation):
         try:
             for t in tokens:

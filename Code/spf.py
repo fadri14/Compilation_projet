@@ -35,6 +35,7 @@ def decomposeList(l, d = 0):
     return v, t
 
 class MyInterpreter(Interpreter):
+    # Ce décourateur sert uniquement à réduire le nombre de ligne, voir plus loin
     def deco(self, tree, type_res, func):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
@@ -54,6 +55,7 @@ class MyInterpreter(Interpreter):
         var.name = tokens[1].value
         var.line = tokens[1].line
         typeOfValue = None
+        # Si on initialise la variable avec une valeur
         if len(tokens) == 3:
             typeOfValue = tokens[2].type
             if isinstance(tokens[2].type, tuple):
@@ -127,7 +129,7 @@ class MyInterpreter(Interpreter):
             sys.exit(0)
 
         if test.value == "vrai":
-            for i in tree.children[1:]:
+            for i in tree.children[1:]: # Les instructions contenues dans le si
                 self.visit(i)
         return test.value
 
@@ -139,8 +141,8 @@ class MyInterpreter(Interpreter):
                 self.visit(c)
 
     def tantque(self, tree):
-        tree_copy = deepcopy(tree)
-        while True:
+        tree_copy = deepcopy(tree) # On copie les instructions de la boucle pour le sauvegarder avant qu'elles soient traitées
+        while True: # Boucle do…while version python
             test = self.visit(tree.children[0])
             test = flattenList(test)[0]
             try:
@@ -153,7 +155,7 @@ class MyInterpreter(Interpreter):
             if test.value == "vrai":
                 for i in tree.children[1:]:
                     self.visit(i)
-                tree = deepcopy(tree_copy)
+                tree = deepcopy(tree_copy) # On reprend l'arbre comme il était avant l'itération
             else:
                 break
 
@@ -198,6 +200,7 @@ class MyInterpreter(Interpreter):
 
     def exp(self, tree):
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
+            # C'est ici qu'on récupère les valeurs des variables pour ensuite calculer les expressions
             if token.type == "VARIABLE":
                 try:
                     var = memo.get(token.value, token.line, token.column)
@@ -212,6 +215,7 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def literal(self, tree):
+        # On reformate les litéraux pour que les entiers soient des vrais entiers et pour retirer les "" utilisés pour créer un texte
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
             if token.type == "ENTIER":
                 token.value = int(token.value)
@@ -223,6 +227,7 @@ class MyInterpreter(Interpreter):
     def leslistes(self, tree):
         return self.visit_children(tree)
 
+    # Parcour une liste de token de manière récursive pour garder uniquement les valeurs et les types
     def deleteToken(self, l):
         resultat = []
         for element in l:
@@ -246,14 +251,15 @@ class MyInterpreter(Interpreter):
                     tmp.append(Token(tokens[i].type[1][j], tokens[i].value[j]))
                 tokens.pop(i)
                 tokens.insert(i, tmp)
-
         l, t = decomposeList(self.deleteToken(tokens))
+        # Un token qui contient une liste a pour type un tuple "liste" et la liste des types des valeurs contenues dans la liste
         return Token(("liste", t), l)
 
     def sequence(self, tree):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
         step = 1
+        # On peut créer une séquence croissante de décroissante
         if(tokens[0].value - tokens[1].value > 0):
             step = -1
         t = ("liste", ["ENTIER"]+["ENTIER"]*((tokens[1].value - tokens[0].value)*step))
@@ -263,6 +269,7 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def egalite(self, tree):
+        # Utilisation du décorateur pour économiser des lignes, on envoie une fonction lambda qui utilise le backend
         return self.deco(tree, "BOOLEEN", lambda tokens: value.egalite(tokens))
 
     def nonegalite(self, tree):
@@ -300,6 +307,7 @@ class MyInterpreter(Interpreter):
             if tokens[0].type != tokens[1].type and (not isinstance(tokens[0].type, tuple) or not isinstance(tokens[1].type, tuple)):
                 raise SPFIncompatibleType((tokens[0].value, tokens[1].line, tokens[1].column), [tokens[0].type, tokens[1].type])
 
+            # Traitement des additions entres des tuples et des textes
             if isinstance(tokens[0].type, tuple):
                 res = tokens[0].value
                 res.extend(tokens[1].value)
@@ -315,6 +323,7 @@ class MyInterpreter(Interpreter):
             sys.exit(0)
 
     def soustraction(self, tree):
+        # La vérification des types se fait côté backend
         return self.deco(tree, "ENTIER", lambda tokens: value.calcul(tokens, lambda n1, n2: n1 - n2))
 
     def multiplication(self, tree):
@@ -363,21 +372,23 @@ if __name__ == '__main__':
     
     value = back.Value()
 
+    # Défini dans la gestion des erreurs le fichier interprété
     setFile(args.file)
 
     with open(args.file) as f:
         try:
             try:
                 tree = parser.parse(f.read())
-            except UnexpectedToken as e:
+            except UnexpectedToken as e: # Erreur de syntaxe classique
                 raise SPFSyntaxError((e.token.value, e.token.line, e.token.column), e.expected)
-            except UnexpectedCharacters as e:
+            except UnexpectedCharacters as e: # Erreur lié à un caractère non reconnu
                 raise SPFSyntaxError((e.char, e.line, e.column))
-            except UnexpectedEOF as e:
+            except UnexpectedEOF as e: # Dernière erreur possible avec lark voir documentation
                 raise SPFException("SPFException : l'entrée se termine mais en attende d'un jeton.")
         except SPFException as e:
             print(e)
             sys.exit(0)
+
     interpreter.visit(tree)
     
     if args.memory:

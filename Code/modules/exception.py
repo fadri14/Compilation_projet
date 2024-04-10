@@ -1,11 +1,13 @@
 import linecache as lc 
 
+# Défini le fichier interprété pour tous ce fichier de code
 def setFile(f):
     global file
     file = f
 
 class SPFException(Exception):
     def __init__(self, error, info): # info = (variable, line_error, column)
+        # Permet une illustration avec le fichier source en sachant le fichier, la ligne, la colonne et la "variable" à montrer
         global file
         line_code = lc.getline(file, info[1]) 
         surligne = " " * (info[2]-1) + "^" + "~" * (len(str(info[0]))-1)
@@ -17,6 +19,7 @@ class SPFException(Exception):
     
 class SPFSyntaxError(SPFException):
     def __init__(self, info, expected = None):
+        # Il y a un sufix pour l'exception UnexpectedToken
         sufix = ""
         if expected != None:
             tmp = ""
