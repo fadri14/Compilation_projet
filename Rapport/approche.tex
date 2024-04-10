@@ -1,5 +1,61 @@
 \section{Grammaire implémentée}
 %Une description de la grammaire implémentée et des points sensibles la concernant
+D'abord, nous avons conçus notre programme comme un nombre indétermimé d'instructions.
+Cette dernière se définisant par soit une assignation, un affichage, un ajout, une condition, une boucle ou encore une expression.
+Le ";" n'a pas été défini globalement mais au cas par cas car les conditions et les boucles sont délimitées par des accolades.
+Nous allons passer en revu chacun de ces instructions:
+
+\subsection{Les déclarations}
+Une déclaration est simplement défini par un type, une variable ainsi que potentiellement initialisée avec une expression.
+Le langage SPF contient quatres types:
+
+\begin{itemize}
+\item booléen
+\item entier
+\item texte
+\item liste
+\end{itemize}
+
+Notez qu'une liste est défini comme une liste de valeur peu importe le type ou alors par un séquence de nombre entier.
+Une variable quant à elle doit respecter la grammaire suivante:
+Le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas. Le nom d’une variable ne peut pas débuter par un chiffre.
+Nous avons donc obligé un premier terme avec une lettre ou un underscore et ensuite un nombre indétermimé de lettre, de chiffres et de underscore.
+Nous reparlerons de la grammaire d'une expression
+
+\subsection{Les assignations}
+Elles sont très similaires aux déclarations mise à part le faite que le type ne doit plus être précisé mais maintenant, il faut obligatoirement une expression.
+
+\subsection{L'affichage}
+\textbf{afficher} prend simplement une suite d'au moins une expression séparées par des virgules.
+Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat de l'instruction \textbf{ajout}.
+
+\subsection{L'ajout}
+Pour \textbf{ajout}, nous définissons une grammaire avec une expression et une variable dans laquelle sera rajoutée le résultat de l'expression.
+
+\subsection{Les boucles}
+\textbf{boucle} représente simplement les deux possibilités de boucle offertes par le langage SPF. À savoir \textbf{tantque} qui prend une expression et une suite d'instruction. Et \textbf{pourchaque} qui a également besoin d'une variable et de son type.
+
+\subsection{Les conditions}
+Tout comme le point précédent, \textbf{condition} contient une règle \textbf{si} qui exécute les instructions en fonction de la condition. Et \textbf{sisinon}, une extension de \textbf{si} qui prend en plus d'autres instructions dans un autre corps d'accolades.
+
+\subsection{Les expressions}
+Les expressions se définissent de base comme des litéraux ou des opérations mais peuvent être englobées par des parenthèses pour émettre des priorités ou encore être représentées par une variable.
+
+\subsubsection{Les litéraux}
+Les litéraux représentent toutes les valeurs possibles par rapport aux quatres types de ce langage.
+
+\paragraph{Les booléens}: Valant soit \textit{vrai} soit \textit{faux}.
+
+\paragraph{Les entiers}: Une séquence de chiffre ne commencant pas par 0 sauf si c'est pour représenter 0. Il peut optionnellement avoir un \textit{plus}.
+
+\paragraph{Les textes}: Une suite de n'importe quels symboles entre deux \textit{guillemets}.
+
+\paragraph{Les listes}: Soit une liste d'expression entre \textit{crochets} séparées par des \textit{virgules}. Soit une sequence définit par deux expressions entre \textit{crochets} séparées par un \textit{deux-point}.
+
+\subsubsection{Les opérations}
+
+\subsection{Autres}
+Nous avons également définit une règle pour ignorer tous les espaces blancs et une règle pour ignorer tous les caractères après un \textit{dièse} sur une ligne.
 
 \section{Notre approche}
 \subsection{Les variables}

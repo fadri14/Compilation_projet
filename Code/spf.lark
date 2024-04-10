@@ -1,31 +1,31 @@
 start: instruction*
 
-instruction: declaration
-    | assignation
-    | afficher
+instruction: declaration ";"
+    | assignation ";"
+    | afficher ";"
     | ajout ";"
-    | condition
-    | boucle
     | exp ";"
+    | boucle
+    | condition
 
-declaration.-5: TYPE VARIABLE ("=" exp)? ";"
+declaration.-5: TYPE VARIABLE ("=" exp)?
 
 TYPE.20: "booléen" | "entier" | "texte" | "liste"
 VARIABLE: ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" ) ("a".."z" | "A".."Z" | "é" | "É" | "è" | "È" | "à" | "À" | "ù" | "Ù" | "â" | "Â" | "ê" | "Ê" | "û" | "Û" | "î" | "Î" | "ô" | "Ô" | "ŷ" | "Ŷ" | "_" | "0".."9")*
 
-assignation.-5: VARIABLE "=" exp ";"
+assignation.-5: VARIABLE "=" exp
 
-afficher.-5: "afficher" ((exp | ajout) ",")* (exp | ajout) ";"
+afficher.-5: "afficher" ((exp | ajout) ",")* (exp | ajout)
 
 ajout.-5: "ajouter" exp "dans" VARIABLE
-
-condition: si | sisinon
-si.-5: "si" exp "alors" "{" instruction* "}"
-sisinon.-4: si "sinon" "{" instruction* "}"
 
 boucle: tantque | pourchaque
 tantque.-5: "tant" "que" exp "faire" "{" instruction* "}"
 pourchaque.-5: "pour" "chaque" TYPE VARIABLE "dans" exp "faire" "{" instruction* "}"
+
+condition: si | sisinon
+si.-5: "si" exp "alors" "{" instruction* "}"
+sisinon.-4: si "sinon" "{" instruction* "}"
 
 exp: literal | operation | parenthese | VARIABLE
 parenthese.15: "(" exp ")"
