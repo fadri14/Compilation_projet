@@ -15,7 +15,7 @@ class Memory(): # Stocke les variables
     # on force quand on crée la variable d'une boucle
     def declare(self, var, column, typeOfValue = None, force = False):
         if typeOfValue != None:
-            if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and not isinstance(typeOfValue, tuple)):
+            if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and typeOfValue != "liste"):
                 raise SPFIncompatibleType((var.name, var.line, column), [typeOfValue, var.typeof])
 
         if not force and var.name in self.dico.keys():
@@ -71,8 +71,8 @@ class Memory(): # Stocke les variables
             raise SPFIncompatibleType((var.name, line, column), [typeOfValue, var.typeof])
 
         if var.typeof == 'liste':
-            var.value = value[0]
-            var.listType = value[1]
+            var.value = value
+            var.listType = typeOfValue[1]
         else:
             var.value = value
 

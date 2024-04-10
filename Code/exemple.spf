@@ -1,0 +1,79 @@
+pour chaque liste l dans [[1, 2], [3, 4]] faire
+{
+    pour chaque entier x dans l faire
+    {
+        afficher x;
+    }
+    afficher "";
+}
+
+afficher "";
+
+booléen x = vrai;
+afficher x;
+pour chaque entier x dans [0:1] faire {
+pour chaque entier x dans [3:3+x] faire {
+afficher x;
+}
+afficher x;
+}
+afficher x;
+
+afficher "";
+
+liste nombres = [1, 8, 3, 6];
+entier maximum;
+maximum = nombres[1];
+pour chaque entier nombre dans nombres faire {
+si nombre > maximum alors {
+maximum = nombre;
+}
+}
+afficher "Le maximum dans", nombres, "est", maximum;
+
+afficher "";
+
+entier nombre = 5;
+entier factorielle;
+factorielle = 1;
+tant que nombre > 0 faire {
+factorielle = factorielle * nombre;
+nombre = nombre - 1;
+}
+afficher "La factorielle vaut", factorielle;
+
+afficher "";
+
+liste nombres2 = [3, 3, 6, 7, 8];
+booléen monotone = vrai;
+pour chaque entier position dans [1:taille nombres2 - 1] faire {
+si nombres2[position] > nombres2[position + 1] alors{
+monotone = faux;
+}
+}
+si monotone alors {
+afficher "La liste", nombres2, "est monotone";
+} sinon {
+afficher "La liste", nombres2, "n'est pas monotone";
+}
+
+afficher "";
+
+texte phrase = "Bonjour à tout le monde";
+texte mot = "";
+liste mots = [];
+pour chaque texte caractère dans phrase faire {
+si caractère vaut " " alors {
+si taille mot > 0 alors {
+ajouter mot dans mots;
+mot = "";
+}
+} sinon {
+mot = mot + caractère;
+}
+}
+# Potentiel dernier mot
+si taille mot > 0 alors {
+ajouter mot dans mots;
+}
+afficher mots;

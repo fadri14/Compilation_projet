@@ -8,8 +8,8 @@ class SPFException(Exception):
     def __init__(self, error, info): # info = (variable, line_error, column)
         global file
         line_code = lc.getline(file, info[1]) 
-        surligne = " " * (info[2]-1) + "^" + "~" * (len(info[0])-1)
-        show = f"{line_code[:-1]}\n{surligne}\n\n"
+        surligne = " " * (info[2]-1) + "^" + "~" * (len(str(info[0]))-1)
+        show = f"{line_code[:-1]}\n{surligne}\n"
         self.error = show + error
 
     def __str__(self):
