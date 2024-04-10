@@ -22,8 +22,8 @@ class Memory(): # Stocke les variables
             var2 = self.dico.get(var.name)
             raise SPFAlreadyDefined((var.name, var.line, column), var2.line)
 
-        if var.name in self.keyword: # tester ce qui se passe
-            pass #erreur
+        if var.name in self.keyword:
+            raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mot clés suivants :\n{self.keyword}", (var.name, var.line, column))
 
         if self.flag_debug:
             print("(", str(var.line).ljust(2), ")", "déclaration:".ljust(15), var, file=sys.stderr)
@@ -177,6 +177,7 @@ class Value(): # Effectue les calculs
                 if t.type != "ENTIER":
                     raise SPFIncompatibleType((t.value, t.line, t.column), [t.type, "entier"])
 
+            print("calcul ", tokens[0].value, " ", tokens[1].value, " : ", operation(tokens[0].value, tokens[1].value))
             return operation(tokens[0].value, tokens[1].value)
         except SPFException as e:
             print(e)

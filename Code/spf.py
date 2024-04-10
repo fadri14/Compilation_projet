@@ -1,15 +1,14 @@
 import sys
 import argparse
-from lark import Lark, Token
+from lark import Lark, Token, UnexpectedToken
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFException, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
+from modules.exception import SPFException, SPFSyntaxError, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
 
 #todo:
 # réessayer plusieurs composanstes
 # faire les priorités des opérations
-# faire la gestion d'erreur pour la syntaxe
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -335,8 +334,8 @@ class MyInterpreter(Interpreter):
         try: 
             if tokens[1].type == "ENTIER":
                 if tokens[0].type == "TEXTE" or isinstance(tokens[0].type, tuple):
-                    if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value: # provoque une erreur de syntaxe si l'entier est négatif
-                        raise SPFIndexError((tokens[1].value, tokens[1].line, tokens[1].column))
+                    if tokens[1].value <= 0 or len(tokens[0].value) < tokens[1].value:
+                        raise SPFIndexError((tokens[0].value, tokens[0].line, tokens[0].column))
                     else:
                         if tokens[0].type[0] == "liste" :
                             return Token(tokens[0].type[1][tokens[1].value-1], tokens[0].value[tokens[1].value-1])
@@ -371,7 +370,14 @@ if __name__ == '__main__':
     setFile(args.file)
 
     with open(args.file) as f:
-        tree = parser.parse(f.read())
+        try:
+            try:
+                tree = parser.parse(f.read())
+            except UnexpectedToken as e:
+                raise SPFSyntaxError((e.token.value, e.token.line, e.token.column), e.expected)
+        except SPFException as e:
+            print(e)
+            sys.exit(0)
     interpreter.visit(tree)
     
     if args.memory:

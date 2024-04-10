@@ -16,8 +16,12 @@ class SPFException(Exception):
         return self.error
     
 class SPFSyntaxError(SPFException):
-    def __init__(self, error):
-        self.error = error
+    def __init__(self, info, expected):
+        tmp = ""
+        for e in expected:
+            tmp += ("  " + e + ",\n")
+        expected = "\n" + tmp
+        super().__init__(f"SPFSyntaxError : il y a une erreur de syntaxe à la ligne {info[1]} par rapport au terme '{info[0]}'.\n\nUn des tokens suivants étaient attendus:\n{expected}", info)
 
 class SPFUninitializedVariable(SPFException):
     def __init__(self, info, line_declare):
