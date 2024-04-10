@@ -65,13 +65,14 @@ et.5: exp "et" exp
 ou.5: exp "ou" exp
 non.10: "non" exp
 
-exp1.-10: exp
-exp2: exp
+exp1.-1: exp
+exp2.1: exp
+
 negation.10: "-" exp
-addition.7: exp1 ("+" exp2)+
-soustraction.7: exp1 ("-" exp2)+
-multiplication.7: exp1 ("*" exp2)+
-division.7: exp1 ("/" exp2)+
+addition.7: exp1 "+" exp2
+soustraction.7: exp1 "-" exp2
+multiplication.7: exp2 "*" exp
+division.7: exp2 "/" exp
 
 indice.10: exp "[" exp "]"
 taille.10: "taille" (leslistes | VARIABLE | literal)

@@ -181,7 +181,6 @@ class Value(): # Effectue les calculs
                 if t.type != "ENTIER":
                     raise SPFIncompatibleType((t.value, t.line, t.column), [t.type, "entier"])
 
-            print("calcul ", tokens[0].value, " ", tokens[1].value, " : ", operation(tokens[0].value, tokens[1].value))
             return operation(tokens[0].value, tokens[1].value)
         except SPFException as e:
             print(e)

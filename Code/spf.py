@@ -1,14 +1,10 @@
 import sys
 import argparse
-from lark import Lark, Token, UnexpectedToken
+from lark import Lark, Token, UnexpectedToken, UnexpectedCharacters, UnexpectedEOF
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
 from modules.exception import SPFException, SPFSyntaxError, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
-
-#todo:
-# réessayer plusieurs composanstes
-# faire les priorités des opérations
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -375,6 +371,10 @@ if __name__ == '__main__':
                 tree = parser.parse(f.read())
             except UnexpectedToken as e:
                 raise SPFSyntaxError((e.token.value, e.token.line, e.token.column), e.expected)
+            except UnexpectedCharacters as e:
+                raise SPFSyntaxError((e.char, e.line, e.column))
+            except UnexpectedEOF as e:
+                raise SPFException("SPFException : l'entrée se termine mais en attende d'un jeton.")
         except SPFException as e:
             print(e)
             sys.exit(0)
