@@ -23,7 +23,11 @@ class Memory(): # Stocke les variables
             raise SPFAlreadyDefined((var.name, var.line, column), var2.line)
 
         if var.name in self.keyword:
-            raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mot clés suivants :\n{self.keyword}", (var.name, var.line, column))
+            keyword = ""
+            for k in self.keyword:
+                keyword += ("  " + k + ",\n")
+            keyword = "\n" + keyword
+            raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mot clés suivants :{keyword}", (var.name, var.line, column))
 
         if self.flag_debug:
             print("(", str(var.line).ljust(2), ")", "déclaration:".ljust(15), var, file=sys.stderr)
