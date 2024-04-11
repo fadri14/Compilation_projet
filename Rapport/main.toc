@@ -19,7 +19,6 @@
 \contentsline {subsection}{\numberline {3.1}Les variables}{5}{subsection.3.1}%
 \contentsline {subsection}{\numberline {3.2}Le test conditionnel}{5}{subsection.3.2}%
 \contentsline {subsection}{\numberline {3.3}Les boucles}{5}{subsection.3.3}%
-\contentsline {section}{\numberline {4}Les erreurs connues et les solutions envisagées}{5}{section.4}%
-\contentsline {section}{\numberline {5}Difficultés rencontrées}{6}{section.5}%
-\contentsline {section}{\numberline {6}Répartition du travail}{6}{section.6}%
-\contentsline {section}{\numberline {7}Conclusion}{6}{section.7}%
+\contentsline {section}{\numberline {4}Les erreurs connues, les solutions envisagées et les difficultés rencontrées}{5}{section.4}%
+\contentsline {section}{\numberline {5}Répartition du travail}{7}{section.5}%
+\contentsline {section}{\numberline {6}Conclusion}{7}{section.6}%
