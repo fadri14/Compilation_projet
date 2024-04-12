@@ -8,7 +8,7 @@
 \contentsline {subsection}{\numberline {2.5}Les boucles}{4}{subsection.2.5}%
 \contentsline {subsection}{\numberline {2.6}Les conditions}{4}{subsection.2.6}%
 \contentsline {subsection}{\numberline {2.7}Les expressions}{4}{subsection.2.7}%
-\contentsline {subsubsection}{\numberline {2.7.1}Les litéraux}{4}{subsubsection.2.7.1}%
+\contentsline {subsubsection}{\numberline {2.7.1}Les littéraux}{4}{subsubsection.2.7.1}%
 \contentsline {paragraph}{Les booléens}{4}{section*.2}%
 \contentsline {paragraph}{Les entiers}{5}{section*.3}%
 \contentsline {paragraph}{Les textes}{5}{section*.4}%

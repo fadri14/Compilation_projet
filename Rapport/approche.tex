@@ -1,8 +1,13 @@
+%Claire : Doit-on mettre des parties de notre code dans le rapport pour que le prof l'ait sous les yeux avec les explications ?
+%J'ai un peu reformulé certaines phrases et corrigé qlq fautes d'ortho 
+%Pour certains trucs j'ai mis en commentaire pour être sûre
+%Q = question
 \section{Grammaire implémentée}
-D'abord, nous avons conçu notre programme comme un nombre indéterminé d'instructions.
+D'abord, nous avons conçu notre programme % grammaire non?
+comme un nombre indéterminé d'instructions.
 Cette dernière se définissant par soit une assignation, un affichage, un ajout, une condition, une boucle ou encore une expression.
 Le ";" n'a pas été défini globalement mais au cas par cas car les conditions et les boucles sont délimitées par des accolades.
-Nous allons passer en revue chacun de ces instructions:
+Nous allons passer en revue chacun de ces instructions.
 
 \subsection{Les déclarations}
 Une déclaration est simplement définie par un type, une variable ainsi que potentiellement initialisée avec une expression.
@@ -15,56 +20,62 @@ Le langage SPF contient quatres types:
 \item liste
 \end{itemize}
 
-Notez qu'une liste est définie comme une liste de valeur peu importe le type ou alors par une séquence de nombre entier.
+Une liste est une liste de valeur, quel que soit le type, ou elle est caractérisée par une séquence de nombres entiers.
 Une variable quant à elle doit respecter la grammaire suivante:
-Le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas. Le nom d’une variable ne peut pas débuter par un chiffre.
-Nous avons donc obligé un premier terme avec une lettre ou un underscore et ensuite un nombre indéterminé de lettre, de chiffres et d'underscore.
-Nous reparlerons de la grammaire d'une expression
+Le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas %underscore. 
+Ce dernier ne peut pas non plus débuter par un chiffre.
+Nous avons donc obligé le fait que le premier terme soit une lettre ou un underscore et ensuite un nombre indéterminé de lettre, de chiffres et d'underscores. %Ce premier terme est ensuite suivi de ... 
+Nous reparlerons de la grammaire d'une expression %dans les sections suivantes.
 
 \subsection{Les assignations}
-Elles sont très similaires aux déclarations mises à par le fait que le type ne doit plus être précisé mais maintenant, il faut obligatoirement une expression.
+Elles sont très similaires aux déclarations, sauf que le type n'est plus précisé, mais maintenant, il est obligatoire d'avoir une expression.
 
 \subsection{L'affichage}
+%L'action d'\textbf{afficher}
 \textbf{afficher} prend simplement une suite d'au moins une expression séparée par des virgules.
-Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat de l'instruction \textbf{ajout}.
+Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat de l'instruction \textbf{ajout}. %d'une instruction
 
 \subsection{L'ajout}
+%Q
 Pour \textbf{ajout}, nous définissons une grammaire avec une expression et une variable dans laquelle sera rajoutée le résultat de l'expression.
 
 \subsection{Les boucles}
+%Pareil que afficher c'est bizarre de commencer sans maj la phrase ^^
 \textbf{boucle} représente simplement les deux possibilités de boucle offertes par le langage SPF.
-À savoir \textbf{tantque} qui prend une expression et une suite d'instructions. Et \textbf{pourchaque} qui a également besoin d'une variable et de son type.
+Il faut prendre en compte que \textbf{tantque} prend une expression et une suite d'instructions. Et \textbf{pourchaque} nécessite aussi une variable et de son type.
 
 \subsection{Les conditions}
 Tout comme le point précédent, \textbf{condition} contient une règle \textbf{si} qui exécute les instructions en fonction de la condition.
-Et \textbf{sisinon}, une extension de \textbf{si} qui prend en plus d'autres instructions dans un autre corps d'accolades.
+%Maj?
+\textbf{sisinon} est une extension de \textbf{si} qui prend en plus d'autres instructions dans un autre corps d'accolades.
 
 \subsection{Les expressions}
-Les expressions se définissent de base comme des litéraux ou des opérations mais peuvent être englobées par des parenthèses pour émettre des priorités ou encore être représentées par une variable.
+Les expressions sont de base décrites comme des littéraux ou des opérations, mais peuvent être entourées de parenthèses pour donner des priorités, ou être représentées par une variable.
 
-\subsubsection{Les litéraux}
-Les litéraux représentent toutes les valeurs possibles par rapport aux quatre types de ce langage.
+\subsubsection{Les littéraux}
+Les littéraux représentent toutes les valeurs possibles par rapport aux quatre types de ce langage.
 
-\paragraph{Les booléens}: Valant soit \textit{vrai} soit \textit{faux}.
+\paragraph{Les booléens}: valant soit \textit{vrai} soit \textit{faux}.
 
-\paragraph{Les entiers}: Une séquence de chiffre ne commençant pas par 0 sauf si c'est pour représenter 0. Il peut optionnellement avoir un \textit{plus}.
+\paragraph{Les entiers}: une séquence de chiffres ne commençant pas par 0, à moins que ce ne soit pour représenter 0. Il peut optionnellement avoir un \textit{plus}.
 
-\paragraph{Les textes}: Une suite de n'importe quels symboles entre deux \textit{guillemets}.
+\paragraph{Les textes}: une suite de n'importe quels symboles entre deux \textit{guillemets}.
 
-\paragraph{Les listes}: Soit une liste d'expression entre \textit{crochets} séparé par des \textit{virgules}.
-Soit une sequence définie par deux expressions entre \textit{crochets} séparées par un \textit{deux-points}.
+\paragraph{Les listes}: soit une liste d'expressions entre \textit{crochets} séparées par des \textit{virgules}, soit une séquence définie par deux expressions entre \textit{crochets} séparées par un \textit{deux-points}.
 
 \subsubsection{Les opérations}
-Mises à part les opérations \textbf{indice} et\textbf{taille}, les autres opérations sont toutes composées d'une ou deux expressionx
-ainsi que de mot clés pour les différencier. Attention au niveau des opérations mathématiques, nous avons mis en place les règles \textbf{exp1} et \textbf{exp2}
-pour émettre des priorités dans les calculs.
-Rien de spécial côté \textbf{indice}, il prend deux expressions dont la deuxième entre \textit{crochets}.
+Mises à part les opérations \textbf{indice} et\textbf{taille}, les autres opérations sont toutes composées d'une ou deux expressions ainsi que de mots clés pour les différencier. 
+Attention au niveau des opérations mathématiques, nous avons mis en place les règles \textbf{exp1} et \textbf{exp2} pour émettre des priorités dans les calculs.
+Rien de particulier du côté d'\textbf{indice}, ce dernier prend deux expressions dont la deuxième entre \textit{crochets}.
+
+%truc qui cloche avec soit et mais aussi
 Pour finir, \textbf{taille} peut recevoir soit \textbf{leslistes} (une \textbf{liste} ou une \textbf{sequence})
-mais aussi une variable qui contiendra une des deux valeurs précédement citées.
+mais aussi une variable qui contiendra une des deux valeurs précédemment citées.
 
 \subsection{Autres}
 Nous avons également défini une règle pour ignorer tous les espaces blancs et une règle pour ignorer tous les caractères après un \textit{dièse} sur une ligne.
 
+%Je dois encore juste lire ici, sinon tout relu
 \section{Notre approche}
 \subsection{Les variables}
 Nous avons d'abord créé une classe pour stocker les caractéristiques des variables à savoir, leur type, leur nom, leur valeur

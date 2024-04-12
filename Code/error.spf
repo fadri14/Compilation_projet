@@ -25,10 +25,10 @@ pour chaque texte caract dans test faire {
 afficher caract;
 }
 
-afficher test[3];
+#afficher test[3];
 #afficher test[4];
 
-texte mot = "huhu";
+texte test = "huhu";
 afficher mot[1];
 
 1<"olo";
