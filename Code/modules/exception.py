@@ -1,6 +1,6 @@
 import linecache as lc 
 
-# Défini le fichier interprété pour tous ce fichier de code
+# Définit le fichier interprété pour tous ce fichier de code
 def setFile(f):
     global file
     file = f
@@ -19,19 +19,19 @@ class SPFException(Exception):
     
 class SPFSyntaxError(SPFException):
     def __init__(self, info, expected = None):
-        # Il y a un sufix pour l'exception UnexpectedToken
+        # Il y a un suffixe pour l'exception UnexpectedToken
         sufix = ""
         if expected != None:
             tmp = ""
             for e in expected:
                 tmp += ("  " + e + ",\n")
             expected = "\n" + tmp
-            sufix = f"\n\nUn des tokens suivants étaient attendus:\n{expected}"
+            sufix = f"\n\nUn des tokens suivants était attendu:\n{expected}"
         super().__init__(f"SPFSyntaxError : il y a une erreur de syntaxe à la ligne {info[1]} par rapport au terme '{info[0]}'.{sufix}", info)
 
 class SPFUninitializedVariable(SPFException):
     def __init__(self, info, line_declare):
-        super().__init__(f"SPFUninitializedVariable : la variable '{info[0]}' est utilisé à la ligne {info[1]} mais n'a pas été initialisée ! Elle a été déclarée à la ligne {line_declare}.", info)
+        super().__init__(f"SPFUninitializedVariable : la variable '{info[0]}' est utilisée à la ligne {info[1]} mais n'a pas été initialisée ! Elle a été déclarée à la ligne {line_declare}.", info)
 
 class SPFUnknownVariable(SPFException):
     def __init__(self, info):
@@ -55,5 +55,5 @@ class SPFIncompatibleType(SPFException):
 
 class SPFIndexError(SPFException):
     def __init__(self, info):
-        super().__init__(f"SPFIndexError : La position {info[0]} que vous utilisez à la ligne {info[1]} est invalide, il doit être compris entre 1 et la taille du terme !", info)
+        super().__init__(f"SPFIndexError : La position {info[0]} que vous utilisez à la ligne {info[1]} est invalide, elle doit être comprise entre 1 et la taille du terme !", info)
 

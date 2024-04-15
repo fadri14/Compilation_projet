@@ -13,7 +13,7 @@ class Memory(): # Stocke les variables
         self.stack_temporaire = []
         self.keyword = ["booléen", "entier", "texte", "liste", "afficher", "ajouter", "dans", "si", "alors", "sinon", "tant", "que", "faire", "pour", "chaque", "ne", "vaut", "pas", "et", "ou", "non", "taille"]
 
-    # on force quand on crée la variable d'une boucle
+    # On force quand on crée la variable d'une boucle
     def declare(self, var, column, typeOfValue = None, force = False):
         if typeOfValue != None:
             if (var.typeof == "texte" and typeOfValue != "TEXTE") or (var.typeof == "entier" and typeOfValue != "ENTIER") or (var.typeof == "booléen" and typeOfValue != "BOOLEEN") or (var.typeof == "liste" and typeOfValue != "liste"):
@@ -29,13 +29,13 @@ class Memory(): # Stocke les variables
                 keyword += ("  " + k + ",\n")
             keyword = "\n" + keyword
             # On gère ce type d'erreur ici et non dans la grammaire pour avoir un message plus adéquat
-            raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mot clés suivants :{keyword}", (var.name, var.line, column))
+            raise SPFException(f"SPFSyntaxError : le nom des variables doit être différent des mots clés suivants :{keyword}", (var.name, var.line, column))
 
         if self.flag_debug:
             print("(", str(var.line).ljust(2), ")", "déclaration:".ljust(15), var, file=sys.stderr)
 
         if force and var.name in self.dico.keys():
-            # On déplace temporairement la variable déjà crée dans une stack durant le temps d'exécution de la boucle
+            # On déplace temporairement la variable déjà créée dans une stack durant le temps d'exécution de la boucle
             self.stack_temporaire.append(self.dico.get(var.name))
             del self.dico[var.name]
 
@@ -120,7 +120,7 @@ class Variable(): # Représente une variable
         return f"| nom: {self.name.ljust(max)} | type: {self.typeof.ljust(7)} | valeur: {res}"
 
 class Value(): # Effectue les calculs
-    # Décorateur utilisé par les opérations logiques pour limiter le nombre de ligne
+    # Décorateur utilisé par les opérations logiques pour limiter le nombre de lignes
     def deco(self, tokens, type_tokens, func):
         try:
             for t in tokens:

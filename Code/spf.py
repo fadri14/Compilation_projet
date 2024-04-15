@@ -16,14 +16,14 @@ def flattenList(l):
             resultat.append(element)
     return resultat
 
-# Sépare les valeurs des types dans un liste du genre [(1, 'ENTIER'), ('yo', 'TEXTE')]
+# Sépare les valeurs des types dans une liste du genre [(1, 'ENTIER'), ('yo', 'TEXTE')]
 def decomposeList(l, d = 0):
     v = []
     t = []
     for element in l:
         if isinstance(element, list) or isinstance(element, tuple) and isinstance(element[0], list):
             resV, resT = decomposeList(element, d +1)
-            if d%2 == 0: # quand c'est une profondeur impaire, cela signifie que c'est un tuple superflux qui dit que c'est une liste donc il ne faut pas rajouter une profondeur
+            if d%2 == 0: # quand c'est une profondeur impaire, cela signifie que c'est un tuple superflu qui dit que c'est une liste donc il ne faut pas rajouter une profondeur
                 v.append(resV)
                 t.append(resT)
             else:
@@ -35,7 +35,7 @@ def decomposeList(l, d = 0):
     return v, t
 
 class MyInterpreter(Interpreter):
-    # Ce décourateur sert uniquement à réduire le nombre de ligne, voir plus loin
+    # Ce décorateur sert uniquement à réduire le nombre de lignes, voir plus loin
     def deco(self, tree, type_res, func):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
@@ -141,7 +141,7 @@ class MyInterpreter(Interpreter):
                 self.visit(c)
 
     def tantque(self, tree):
-        tree_copy = deepcopy(tree) # On copie les instructions de la boucle pour le sauvegarder avant qu'elles soient traitées
+        tree_copy = deepcopy(tree) # On copie les instructions de la boucle pour les sauvegarder avant qu'elles soient traitées
         while True: # Boucle do…while version python
             test = self.visit(tree.children[0])
             test = flattenList(test)[0]
@@ -215,7 +215,7 @@ class MyInterpreter(Interpreter):
         return self.visit_children(tree)
 
     def literal(self, tree):
-        # On reformate les litéraux pour que les entiers soient des vrais entiers et pour retirer les "" utilisés pour créer un texte
+        # On reformate les littéraux pour que les entiers soient des vrais entiers et pour retirer les "" utilisés pour créer un texte
         for token in tree.scan_values(lambda x: isinstance(x, Token)):
             if token.type == "ENTIER":
                 token.value = int(token.value)
@@ -227,7 +227,7 @@ class MyInterpreter(Interpreter):
     def leslistes(self, tree):
         return self.visit_children(tree)
 
-    # Parcour une liste de token de manière récursive pour garder uniquement les valeurs et les types
+    # Parcour une liste de tokens de manière récursive pour garder uniquement les valeurs et les types
     def deleteToken(self, l):
         resultat = []
         for element in l:
@@ -307,7 +307,7 @@ class MyInterpreter(Interpreter):
             if tokens[0].type != tokens[1].type and (not isinstance(tokens[0].type, tuple) or not isinstance(tokens[1].type, tuple)):
                 raise SPFIncompatibleType((tokens[0].value, tokens[1].line, tokens[1].column), [tokens[0].type, tokens[1].type])
 
-            # Traitement des additions entres des tuples et des textes
+            # Traitement des additions entre des tuples et des textes
             if isinstance(tokens[0].type, tuple):
                 res = tokens[0].value
                 res.extend(tokens[1].value)
@@ -372,7 +372,7 @@ if __name__ == '__main__':
     
     value = back.Value()
 
-    # Défini dans la gestion des erreurs le fichier interprété
+    # Définit dans la gestion des erreurs le fichier interprété
     setFile(args.file)
 
     with open(args.file) as f:
@@ -384,7 +384,7 @@ if __name__ == '__main__':
             except UnexpectedCharacters as e: # Erreur lié à un caractère non reconnu
                 raise SPFSyntaxError((e.char, e.line, e.column))
             except UnexpectedEOF as e: # Dernière erreur possible avec lark voir documentation
-                raise SPFException("SPFException : l'entrée se termine mais en attende d'un jeton.")
+                raise SPFException("SPFException : l'entrée se termine mais en attente d'un jeton.")
         except SPFException as e:
             print(e)
             sys.exit(0)

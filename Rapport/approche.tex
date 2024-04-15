@@ -1,13 +1,17 @@
 %Claire : Doit-on mettre des parties de notre code dans le rapport pour que le prof l'ait sous les yeux avec les explications ?
 %J'ai un peu reformulé certaines phrases et corrigé qlq fautes d'ortho 
 %Pour certains trucs j'ai mis en commentaire pour être sûre
+%nbres dans grammaire + priorité
+%Suffixe dans exception aller voir
+%255-262 spf.py
+%littéraux -> 2t
 %Q = question
 \section{Grammaire implémentée}
 D'abord, nous avons conçu notre programme % grammaire non?
 comme un nombre indéterminé d'instructions.
 Cette dernière se définissant par soit une assignation, un affichage, un ajout, une condition, une boucle ou encore une expression.
 Le ";" n'a pas été défini globalement mais au cas par cas car les conditions et les boucles sont délimitées par des accolades.
-Nous allons passer en revue chacun de ces instructions.
+Nous allons passer en revue chacune de ces instructions.
 
 \subsection{Les déclarations}
 Une déclaration est simplement définie par un type, une variable ainsi que potentiellement initialisée avec une expression.
@@ -20,9 +24,9 @@ Le langage SPF contient quatres types:
 \item liste
 \end{itemize}
 
-Une liste est une liste de valeur, quel que soit le type, ou elle est caractérisée par une séquence de nombres entiers.
+Une liste est soit une liste de valeurs, quel que soit le type, soit elle est caractérisée par une séquence de nombres entiers. %ça peut être une liste de mots aussi
 Une variable quant à elle doit respecter la grammaire suivante:
-Le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas %underscore. 
+le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas. %underscore
 Ce dernier ne peut pas non plus débuter par un chiffre.
 Nous avons donc obligé le fait que le premier terme soit une lettre ou un underscore et ensuite un nombre indéterminé de lettre, de chiffres et d'underscores. %Ce premier terme est ensuite suivi de ... 
 Nous reparlerons de la grammaire d'une expression %dans les sections suivantes.
@@ -34,15 +38,15 @@ Elles sont très similaires aux déclarations, sauf que le type n'est plus préc
 %L'action d'\textbf{afficher}
 \textbf{afficher} prend simplement une suite d'au moins une expression séparée par des virgules.
 Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat de l'instruction \textbf{ajout}. %d'une instruction
+%afficher exp -> exp ça peut être une opération, pourquoi ajout pas considéré comme opération (choix?)
 
 \subsection{L'ajout}
-%Q
 Pour \textbf{ajout}, nous définissons une grammaire avec une expression et une variable dans laquelle sera rajoutée le résultat de l'expression.
 
 \subsection{Les boucles}
 %Pareil que afficher c'est bizarre de commencer sans maj la phrase ^^
-\textbf{boucle} représente simplement les deux possibilités de boucle offertes par le langage SPF.
-Il faut prendre en compte que \textbf{tantque} prend une expression et une suite d'instructions. Et \textbf{pourchaque} nécessite aussi une variable et de son type.
+\textbf{boucle} représente simplement les deux possibilités de boucles offertes par le langage SPF.
+Il faut prendre en compte que \textbf{tantque} prend une expression et une suite d'instructions. Et \textbf{pourchaque} nécessite aussi une variable et son type en plus.
 
 \subsection{Les conditions}
 Tout comme le point précédent, \textbf{condition} contient une règle \textbf{si} qui exécute les instructions en fonction de la condition.
@@ -57,14 +61,15 @@ Les littéraux représentent toutes les valeurs possibles par rapport aux quatre
 
 \paragraph{Les booléens}: valant soit \textit{vrai} soit \textit{faux}.
 
-\paragraph{Les entiers}: une séquence de chiffres ne commençant pas par 0, à moins que ce ne soit pour représenter 0. Il peut optionnellement avoir un \textit{plus}.
+\paragraph{Les entiers}: une séquence de chiffres ne commençant pas par 0, à moins que ce ne soit pour représenter 0. Il peut optionnellement avoir un \textit{plus}.%verif plus?
 
 \paragraph{Les textes}: une suite de n'importe quels symboles entre deux \textit{guillemets}.
 
-\paragraph{Les listes}: soit une liste d'expressions entre \textit{crochets} séparées par des \textit{virgules}, soit une séquence définie par deux expressions entre \textit{crochets} séparées par un \textit{deux-points}.
+\paragraph{Les listes}: soit une liste d'expressions entre \textit{crochets} séparées par des \textit{virgules}, soit une séquence définie par deux expressions entre \textit{crochets} séparées par un \textit{deux-points}. 
+%Sequence grammaire pour exp ok -> mais on gère plus loin c'est quoi exp
 
 \subsubsection{Les opérations}
-Mises à part les opérations \textbf{indice} et\textbf{taille}, les autres opérations sont toutes composées d'une ou deux expressions ainsi que de mots clés pour les différencier. 
+Mises à part les opérations \textbf{indice} et \textbf{taille}, les autres opérations sont toutes composées d'une ou deux expressions ainsi que de mots clés pour les différencier. 
 Attention au niveau des opérations mathématiques, nous avons mis en place les règles \textbf{exp1} et \textbf{exp2} pour émettre des priorités dans les calculs.
 Rien de particulier du côté d'\textbf{indice}, ce dernier prend deux expressions dont la deuxième entre \textit{crochets}.
 
