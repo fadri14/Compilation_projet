@@ -75,40 +75,42 @@ mais aussi une variable qui contiendra une des deux valeurs précédemment cité
 \subsection{Autres}
 Nous avons également défini une règle pour ignorer tous les espaces blancs et une règle pour ignorer tous les caractères après un \textit{dièse} sur une ligne.
 
-%Je dois encore juste lire ici, sinon tout relu
 \section{Notre approche}
 \subsection{Les variables}
-Nous avons d'abord créé une classe pour stocker les caractéristiques des variables à savoir, leur type, leur nom, leur valeur
-mais également les types des valeurs contenues dans la liste si la variable en est une.
+Nous avons d'abord créé une classe pour stocker les caractéristiques des variables à savoir, leur type, leur nom, leur valeur.
+Si la variable est une liste, les types des valeurs contenues dans cette dernière sont également stockés.
 C'est la classe \textbf{Memory} qui a permis de facilement interagir avec les variables grâce aux méthodes \textit{declare}, \textit{get} et \textit{set}.
-Utiliser les variables dans les expressions était facilent car il suffisait de remplacer les variables par leurs valeurs et leurs types
+Utiliser les variables dans les expressions était simple car il suffisait de remplacer les variables par leurs valeurs et leurs types
 quand on se trouvait sur un noeud \textbf{exp}.
 Les affichages liés au mode \textit{debug} ont très rapidement été mis en place étant donné qu'il suffisait d'ajouter
 un affichage aux trois méthodes citées précédemment avec les informations adéquates.
 Dans le cas du mode \textit{memory}, on parcourt simplement le dictionnaire contenant toutes les variables.
 
 \subsection{Le test conditionnel}
-La condition \textit{si} n'a pas pris longtemps à être ajouté car à ce stade, on avait déjà compris comment utiliser l'arbre et
+La condition \textit{si} n'a pas pris longtemps à être ajoutée car à ce stade, on avait déjà compris comment utiliser l'arbre et
 donc compris comment accéder à la condition pour ensuite itérer sur le reste des instructions. 
 Concernant \textit{sisinon}, il fallait juste récupérer le résultat du \textit{si} et ensuite exécuter ou non
 les instructions se trouvant dans le corps de \textit{sisinon}.
 
 \subsection{Les boucles}
-La boucle \textit{tantque} fût très rapide également car la condition fonctionne tout comme les tests conditionnels.
-Nous avons aussi compris qu'une fois l'arbre parcouru, il se transformait et qu'il fallait donc dans le cas des boucles,
+La boucle \textit{tantque} fût également implémentée rapidement car la condition fonctionne de la même manière que les tests conditionnels.
+%Q Comment ça se transformait ?
+Nous avons aussi compris qu'une fois l'arbre parcouru, ce dernier se transformait et qu'il fallait donc dans le cas des boucles,
 sauvegarder les instructions se trouvant dans le corps avant de les parcourir.
-La boucle \textit{pourchaque} n'était pas beaucoup plus complexe sur le papier mis à part si la variable créée existe déjà.
-Une première approche à consister à utiliser un deuxième dictionnaire dans la mémoire qui contenait les variables ne pouvant pas être utilisées temporairement
+La boucle \textit{pourchaque} fonctionne avec la même approche mise à part si la variable créée existe déjà.
+Une première approche a consisté à utiliser un deuxième dictionnaire dans la mémoire qui contenait les variables ne pouvant pas être utilisées temporairement
 mais cela causait un problème.
 En effet, si on a créé une variable et qu'ensuite il y a deux boucles imbriquées \textit{pourchaque} avec le même nom que la variable initiale
-alors on perdait notre valeur initial et on se retrouvait avec une erreur.
+alors on perdait notre valeur initiale et on se retrouvait avec une erreur.
+%Q
 La deuxième approche a donc été d'utiliser une pile au lieu d'un dictionnaire car c'est toujours la dernière variable ajoutée qui doit être retirée en première.
 
 \section{Les erreurs connues, les solutions envisagées et les difficultés rencontrées}
-Il y a actuellement aucune erreur connue, tous les teste ont fonctionné. Cependant, nous avons eu des difficultés pour la gestion des types dans les listes.
+Il y a actuellement aucune erreur connue, tous les tests ont fonctionné. Cependant, nous avons eu des difficultés pour la gestion des types dans les listes.
 En effet, nous n'étions pas parti sur la meilleure solution dès le départ ce qui nous a embrouillés dans le code.
+%Q
 La solution finale a été de stocker les types des valeurs (contenues dans les listes) dans un tuple avec le type \textbf{liste} dans la partie type des Tokens.
 Ce problème fut compliqué parce qu'il fallait prendre en compte qu'une liste pouvait avoir plusieurs dimensions.
 
-Une autre difficulté du projet a été de se débrouiller avec une documentation bancale à propos du module lark.
+Une autre difficulté du projet a été de se débrouiller avec une documentation bancale à propos du module lark.%A rediscuter, Adrien m'a dit qu'il y avait plein d'outils en ligne
 Par exemple, les attributs de l'erreur UnexpectedCharacters n'étaient pas présents dans la documentation. Il a donc fallu aller voir le code source.
