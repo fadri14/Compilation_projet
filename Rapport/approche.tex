@@ -1,13 +1,10 @@
-%Claire : Doit-on mettre des parties de notre code dans le rapport pour que le prof l'ait sous les yeux avec les explications ?
-%J'ai un peu reformulé certaines phrases et corrigé qlq fautes d'ortho 
-%Pour certains trucs j'ai mis en commentaire pour être sûre
 %nbres dans grammaire + priorité
 %Suffixe dans exception aller voir
 %255-262 spf.py
 %littéraux -> 2t
 %Q = question
 \section{Grammaire implémentée}
-D'abord, nous avons conçu notre programme % grammaire non?
+D'abord, nous avons conçu notre grammaire
 comme un nombre indéterminé d'instructions.
 Cette dernière se définissant par soit une assignation, un affichage, un ajout, une condition, une boucle ou encore une expression.
 Le ";" n'a pas été défini globalement mais au cas par cas car les conditions et les boucles sont délimitées par des accolades.
@@ -24,33 +21,30 @@ Le langage SPF contient quatres types:
 \item liste
 \end{itemize}
 
-Une liste est soit une liste de valeurs, quel que soit le type, soit elle est caractérisée par une séquence de nombres entiers. %ça peut être une liste de mots aussi
+Une liste est soit une liste de valeurs, quel que soit le type, soit elle est caractérisée par une séquence de nombres entiers.
 Une variable quant à elle doit respecter la grammaire suivante:
-le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas. %underscore
+le nom d’une variable est composé au minimum d’un caractère, ne peut contenir que des lettres (majuscules et minuscules) accentuées ou non, des chiffres ou un tiret bas.
 Ce dernier ne peut pas non plus débuter par un chiffre.
-Nous avons donc obligé le fait que le premier terme soit une lettre ou un underscore et ensuite un nombre indéterminé de lettre, de chiffres et d'underscores. %Ce premier terme est ensuite suivi de ... 
-Nous reparlerons de la grammaire d'une expression %dans les sections suivantes.
+Nous avons donc obligé le fait que le premier terme soit une lettre ou un underscore. Ce premier terme est ensuite suivi d'un nombre indéterminé de lettre, de chiffres et d'un tiret bas.
+Nous reparlerons de la grammaire d'une expression dans les sections suivantes.
 
 \subsection{Les assignations}
 Elles sont très similaires aux déclarations, sauf que le type n'est plus précisé, mais maintenant, il est obligatoire d'avoir une expression.
 
 \subsection{L'affichage}
-%L'action d'\textbf{afficher}
 \textbf{afficher} prend simplement une suite d'au moins une expression séparée par des virgules.
-Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat de l'instruction \textbf{ajout}. %d'une instruction
-%afficher exp -> exp ça peut être une opération, pourquoi ajout pas considéré comme opération (choix?)
+Nous nous sommes également permis de rajouter la possibilité d'afficher directement le résultat d'une instruction \textbf{ajout}. 
 
 \subsection{L'ajout}
 Pour \textbf{ajout}, nous définissons une grammaire avec une expression et une variable dans laquelle sera rajoutée le résultat de l'expression.
 
 \subsection{Les boucles}
-%Pareil que afficher c'est bizarre de commencer sans maj la phrase ^^
 \textbf{boucle} représente simplement les deux possibilités de boucles offertes par le langage SPF.
 Il faut prendre en compte que \textbf{tantque} prend une expression et une suite d'instructions. Et \textbf{pourchaque} nécessite aussi une variable et son type en plus.
 
 \subsection{Les conditions}
 Tout comme le point précédent, \textbf{condition} contient une règle \textbf{si} qui exécute les instructions en fonction de la condition.
-%Maj?
+
 \textbf{sisinon} est une extension de \textbf{si} qui prend en plus d'autres instructions dans un autre corps d'accolades.
 
 \subsection{Les expressions}
@@ -61,21 +55,18 @@ Les littéraux représentent toutes les valeurs possibles par rapport aux quatre
 
 \paragraph{Les booléens}: valant soit \textit{vrai} soit \textit{faux}.
 
-\paragraph{Les entiers}: une séquence de chiffres ne commençant pas par 0, à moins que ce ne soit pour représenter 0. Il peut optionnellement avoir un \textit{plus}.%verif plus?
+\paragraph{Les entiers}: une séquence de chiffres ne commençant pas par 0, à moins que ce ne soit pour représenter 0. Il peut optionnellement avoir un \textit{plus}.
 
 \paragraph{Les textes}: une suite de n'importe quels symboles entre deux \textit{guillemets}.
 
 \paragraph{Les listes}: soit une liste d'expressions entre \textit{crochets} séparées par des \textit{virgules}, soit une séquence définie par deux expressions entre \textit{crochets} séparées par un \textit{deux-points}. 
-%Sequence grammaire pour exp ok -> mais on gère plus loin c'est quoi exp
 
 \subsubsection{Les opérations}
 Mises à part les opérations \textbf{indice} et \textbf{taille}, les autres opérations sont toutes composées d'une ou deux expressions ainsi que de mots clés pour les différencier. 
 Attention au niveau des opérations mathématiques, nous avons mis en place les règles \textbf{exp1} et \textbf{exp2} pour émettre des priorités dans les calculs.
 Rien de particulier du côté d'\textbf{indice}, ce dernier prend deux expressions dont la deuxième entre \textit{crochets}.
 
-%truc qui cloche avec soit et mais aussi
-Pour finir, \textbf{taille} peut recevoir soit \textbf{leslistes} (une \textbf{liste} ou une \textbf{sequence})
-mais aussi une variable qui contiendra une des deux valeurs précédemment citées.
+Pour finir, \textbf{taille} peut recevoir soit \textbf{leslistes} (une \textbf{liste} ou une \textbf{sequence}), soit une variable qui contiendra une des deux valeurs précédemment citées.
 
 \subsection{Autres}
 Nous avons également défini une règle pour ignorer tous les espaces blancs et une règle pour ignorer tous les caractères après un \textit{dièse} sur une ligne.
@@ -99,7 +90,6 @@ les instructions se trouvant dans le corps de \textit{sisinon}.
 
 \subsection{Les boucles}
 La boucle \textit{tantque} fût également implémentée rapidement car la condition fonctionne de la même manière que les tests conditionnels.
-%Q Comment ça se transformait ?
 Nous avons aussi compris qu'une fois l'arbre parcouru, ce dernier se transformait et qu'il fallait donc dans le cas des boucles,
 sauvegarder les instructions se trouvant dans le corps avant de les parcourir.
 La boucle \textit{pourchaque} fonctionne avec la même approche mise à part si la variable créée existe déjà.
@@ -107,15 +97,13 @@ Une première approche a consisté à utiliser un deuxième dictionnaire dans la
 mais cela causait un problème.
 En effet, si on a créé une variable et qu'ensuite il y a deux boucles imbriquées \textit{pourchaque} avec le même nom que la variable initiale
 alors on perdait notre valeur initiale et on se retrouvait avec une erreur.
-%Q
 La deuxième approche a donc été d'utiliser une pile au lieu d'un dictionnaire car c'est toujours la dernière variable ajoutée qui doit être retirée en première.
 
 \section{Les erreurs connues, les solutions envisagées et les difficultés rencontrées}
 Il y a actuellement aucune erreur connue, tous les tests ont fonctionné. Cependant, nous avons eu des difficultés pour la gestion des types dans les listes.
 En effet, nous n'étions pas parti sur la meilleure solution dès le départ ce qui nous a embrouillés dans le code.
-%Q
 La solution finale a été de stocker les types des valeurs (contenues dans les listes) dans un tuple avec le type \textbf{liste} dans la partie type des Tokens.
 Ce problème fut compliqué parce qu'il fallait prendre en compte qu'une liste pouvait avoir plusieurs dimensions.
 
-Une autre difficulté du projet a été de se débrouiller avec une documentation bancale à propos du module lark.%A rediscuter, Adrien m'a dit qu'il y avait plein d'outils en ligne
+Une autre difficulté du projet a été de se débrouiller avec une documentation bancale à propos du module lark.
 Par exemple, les attributs de l'erreur UnexpectedCharacters n'étaient pas présents dans la documentation. Il a donc fallu aller voir le code source.
