@@ -1,0 +1,5 @@
+sys == 3.11.8
+argparse == 1.1
+lark == 1.1.9
+copy == 3.11.8
+linecache == 3.6
