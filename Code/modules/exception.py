@@ -1,6 +1,6 @@
 import linecache as lc 
 
-# Définit le fichier interprété pour tous ce fichier de code
+# Définit le fichier interprété pour tout ce fichier de code
 def setFile(f):
     global file
     file = f

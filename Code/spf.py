@@ -4,7 +4,7 @@ from lark import Lark, Token, UnexpectedToken, UnexpectedCharacters, UnexpectedE
 from lark.visitors import Interpreter
 import modules.backend as back
 from copy import deepcopy
-from modules.exception import SPFException, SPFSyntaxError, SPFUnknownVariable, SPFAlreadyDefined, SPFIndexError, SPFIncompatibleType, setFile
+from modules.exception import SPFException, SPFSyntaxError, SPFIndexError, SPFIncompatibleType, setFile
 
 # Transforme une liste à plusieurs dimensions en une dimension
 def flattenList(l):
@@ -259,7 +259,7 @@ class MyInterpreter(Interpreter):
         tokens = self.visit_children(tree)
         tokens = flattenList(tokens)
         step = 1
-        # On peut créer une séquence croissante de décroissante
+        # On peut créer une séquence croissante ou décroissante
         if(tokens[0].value - tokens[1].value > 0):
             step = -1
         t = ("liste", ["ENTIER"]+["ENTIER"]*((tokens[1].value - tokens[0].value)*step))
